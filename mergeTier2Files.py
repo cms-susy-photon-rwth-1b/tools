@@ -16,8 +16,9 @@ def mergeFiles(inputFiles,outputFile):
     # add prefix to access remotely
     gridPrefix="root://xrootd-cms.infn.it//"
     inputFiles = [gridPrefix+f for f in inputFiles]
-    
-    sp.call(["hadd","-f","test.root"]+inputFiles)
+    print "using hadd to merge",len(inputFiles),"files..."
+    sp.call(["hadd","-v","0","-f","test.root"]+inputFiles)
+    print "written",outputFile
 
 def getFilePaths(srmDirectoryPath):
     """
