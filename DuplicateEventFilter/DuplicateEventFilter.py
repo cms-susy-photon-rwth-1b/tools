@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
 import ROOT
+ROOT.gErrorIgnoreLevel=ROOT.kError
 import sys
 
 
@@ -25,7 +26,7 @@ class Event():
       return "(r%d, e%d, l%d)"%(self.runNo,self.evtNo,self.lumNo)
 
 
-def readTree( filename, treename = "susyTree" ):
+def readTree( filename, treename ):
     """
     filename: name of file containing the tree
     treename: name of the tree
@@ -35,26 +36,25 @@ def readTree( filename, treename = "susyTree" ):
     tree.AddFile( filename )
     return tree
 
-def filterFile(filename):
-   tree = readTree(filename)
+def filterFile(filename, treename):
+   tree = readTree(filename,treename)
    iDoubleEvents=0
    events = set()
    for evt in tree:
-      event = Event(evt.runNumber, evt.eventNumber, evt.luminosityBlockNumber)
+      event = Event(evt.runNo, evt.evtNo, evt.lumNo)
       if event in events:
          #print "Event found twice:", event
          iDoubleEvents+=1
       else:
          events.add(event)
 
+   print filename.split('/')[-1],
    if iDoubleEvents>0:
-      print filename.split('/')[-1],
-      print "double events: %d/%d"%(iDoubleEvents,tree.GetEntries())
+      print "DUPLICATE events: %d/%d"%(iDoubleEvents,tree.GetEntries())
+   else:
+      print "ok"
 
 if __name__=="__main__":
-   ROOT.gErrorIgnoreLevel=ROOT.kError
-
-   dCachePrefix = "dcap://dcache-cms-dcap.desy.de"
    filenames=sys.argv[1:]
    for filename in filenames:
-      filterFile(dCachePrefix+filename)
+      filterFile(filename,"TreeWriter/eventTree")
