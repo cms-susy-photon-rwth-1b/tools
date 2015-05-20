@@ -1,4 +1,4 @@
-#!/usr/bin/env python27
+#!/usr/bin/env python2
 """
 Script to merge all files of a directory on Tier2.
 usage ./mergeTier2Files.py <outputFile>.root <srm-source-path>
@@ -10,6 +10,7 @@ example usage:
 """
 import subprocess as sp
 import sys
+import DuplicateEventFilter.DuplicateEventFilter as dupFilter
 
 def mergeFiles(inputFiles,outputFile):
     """
@@ -69,3 +70,5 @@ if __name__=="__main__":
 
     # merge all of them
     mergeFiles(inputFiles,outputFilePath)
+    # check if duplicate events exist
+    dupFilter.filterFile(outputFilePath,"TreeWriter/eventTree")
