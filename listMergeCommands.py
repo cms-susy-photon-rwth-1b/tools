@@ -13,7 +13,7 @@ def modifyDatasetName( dataset ):
 def main():
     srmPrefix = "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN="
     user = "jolange"
-    outputPath = "/user/kiesel/nTuples/"
+    outputPath = "/user/kiesel/nTuples"
 
     srmlsOut = subprocess.check_output( "srmls -recursion_depth=5 {}/pnfs/physik.rwth-aachen.de/cms/store/user/{}/".format(srmPrefix,user), shell=True )
     for line in srmlsOut.split("\n"):
