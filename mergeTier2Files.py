@@ -38,6 +38,8 @@ def getDirectoryContent(srmDirectoryPath):
     # only every second entry is name, the rest are sizes
     # and the very first entry is the directory name
     contents=contents[3::2]
+    # ignore the files placed in the subfolder 'failed' and the folder itself
+    contents=[f for f in contents if not f.endswith("/failed/")]
     return contents
 
 def getFilePaths(srmDirectoryPath):
