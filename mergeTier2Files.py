@@ -50,9 +50,9 @@ def getFilePaths(srmDirectoryPath):
     """
     files=getDirectoryContent(srmDirectoryPath)
     # extract the relevant part of the paths
-    files= ["/store/"+f.partition("/cms/store/")[-1] for f in files]
+    files= ["/store/"+f.partition("/cms/store/")[-1] for f in files if f.endswith(".root")]
     return files
-    
+
 if __name__=="__main__":
     outputFile=""
     nextIsOutputName=False
