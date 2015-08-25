@@ -1,0 +1,26 @@
+GH_PATH=https://raw.githubusercontent.com/cms-susy-photon-rwth-1b/TreeWriter/master/TreeWriter/plugins/
+DL=wget $(GH_PATH)$(1)
+
+CXX=g++ -std=c++11 -Wall -Wshadow
+LIBS  =$(shell root-config --libs)
+CFLAGS=$(shell root-config --cflags)
+
+.PHONY:all clean
+
+all: TreeParticles.so
+
+%.so: %.cpp %_dict.cpp
+	$(CXX) -fPIC -shared -o $@ $(LIBS) $(CFLAGS) $^
+
+%_dict.cpp: %.hpp LinkDef.h
+	rootcling -l -f $@ -c -p $^
+
+TreeParticles.cpp:
+	$(call DL,$@)
+TreeParticles.hpp:
+	$(call DL,$@)
+LinkDef.h:
+	$(call DL,$@)
+
+clean:
+	rm -f TreeParticles* LinkDef.h
