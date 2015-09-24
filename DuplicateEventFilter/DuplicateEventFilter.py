@@ -50,9 +50,9 @@ def filterFile(filename, treename):
 
    print filename.split('/')[-1],
    if iDoubleEvents>0:
-      print "DUPLICATE events: %d/%d"%(iDoubleEvents,tree.GetEntries())
+      print "has %d/%d duplicated events"%(iDoubleEvents,tree.GetEntries())
    else:
-      print "No duplicated events found"
+      print "has NO duplicated events"
 
 if __name__=="__main__":
    filenames=sys.argv[1:]
