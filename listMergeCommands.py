@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import subprocess
 import argparse
@@ -7,10 +7,25 @@ import re
 
 def modifyDatasetName( dataset ):
     # shorten dataset name
-    deletes = [ "_13TeV", "-madgraph", "_Tune4C", "-tauola", "_MSDecaysCKM_central", "_TuneCUETP8M1", "-amcatnloFXFX", "-madspin", "-pythia8" ]
+    deletes = [ "_13TeV", "-madgraph", "_Tune4C", "-tauola", "_MSDecaysCKM_central", "_TuneCUETP8M1", "-amcatnloFXFX", "-madspin", "-pythia8", "MLM" ]
     for d in deletes:
         dataset = dataset.replace( d, "" )
     return dataset
+
+
+def getDirs( args, level=1 ):
+    srmlsOut = subprocess.check_output( "srmls -recursion_depth={} {}/pnfs/physik.rwth-aachen.de/cms/store/user/{}".format(level, args.srmPrefix,args.userInputPath), shell=True )
+
+    dirs = []
+    for line in srmlsOut.split("\n"):
+        match = re.match( "\s*512 (.*)", line )
+        if not match: continue
+        dirs.append( match.group(1) )
+    return dirs
+
+
+
+
 
 def main():
     parser = argparse.ArgumentParser(description="List posslible merge commands based on the available files.")
@@ -19,14 +34,15 @@ def main():
     parser.add_argument("--srmPrefix", default="srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=")
     args = parser.parse_args()
 
-    srmlsOut = subprocess.check_output( "srmls -recursion_depth=5 {}/pnfs/physik.rwth-aachen.de/cms/store/user/{}".format(args.srmPrefix,args.userInputPath), shell=True )
-    for line in srmlsOut.split("\n"):
-        match = re.match( ".*/([^/]+)/.*/\d\d\d\d\d\d_\d\d\d\d\d\d/$", line )
-        if match:
-            dataset = match.groups()[0]
-            inFolder = line.replace("512", "").strip()
-            dataset = modifyDatasetName( dataset )
-            print "./mergeTier2Files.py %s/%s_nTuple.root %s%s"%(args.outputPath,dataset,args.srmPrefix,inFolder)
+    dirs = getDirs( args, 4 )
+
+    for line in dirs:
+        match = re.match( ".*/([^/]+)/([^/]+)/\d\d\d\d\d\d_\d\d\d\d\d\d/$", line )
+        if not match: continue
+        dataset, publishedName = match.groups()
+        inFolder = line.replace("512", "").strip()
+        dataset = modifyDatasetName( dataset )
+        print "./mergeTier2Files.py %s/%s_%s_nTuple.root %s%s"%(args.outputPath,dataset,publishedName,args.srmPrefix,inFolder)
 
 if __name__ == "__main__":
     main()
