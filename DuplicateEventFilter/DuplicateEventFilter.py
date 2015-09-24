@@ -52,7 +52,7 @@ def filterFile(filename, treename):
    if iDoubleEvents>0:
       print "DUPLICATE events: %d/%d"%(iDoubleEvents,tree.GetEntries())
    else:
-      print "ok"
+      print "No duplicated events found"
 
 if __name__=="__main__":
    filenames=sys.argv[1:]
