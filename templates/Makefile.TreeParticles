@@ -9,14 +9,12 @@ CFLAGS=$(shell root-config --cflags)
 
 all: TreeParticles.so
 
-%.so: %.cpp %_dict.cpp
+%.so: %_dict.cpp
 	$(CXX) -fPIC -shared -o $@ $(LIBS) $(CFLAGS) $^
 
 %_dict.cpp: %.hpp LinkDef.h
 	rootcling -l -f $@ -c -p $^
 
-TreeParticles.cpp:
-	$(call DL,$@)
 TreeParticles.hpp:
 	$(call DL,$@)
 LinkDef.h:
