@@ -1,15 +1,17 @@
 #!/usr/bin/env python2
 import sys
+import subprocess as sp
+import os
 
 runD_firstRunNumber=256630
 
 def createRunDjson(originalFileName):
     with open(originalFileName) as forig:
         jsonContent=forig.read()
-        jsonContent=jsonContent[1:-1] # remove {}
         # remove all newlines and spaces
         jsonContent=jsonContent.replace("\n","")
         jsonContent=jsonContent.replace(" ","")
+        jsonContent=jsonContent[1:-1] # remove {}
         # build a list with one element for each run number
         runNumberLines=[]
         for rnl in jsonContent.split(',"'):
@@ -38,5 +40,6 @@ def createRunDjson(originalFileName):
 
 if __name__ == '__main__':
     originalFileName=sys.argv[1]
-    selctedFile=createRunDjson(originalFileName)
-
+    selectedFile=createRunDjson(originalFileName)
+    sp.call("brilcalc lumi -u /pb --normtag /afs/cern.ch/user/c/cmsbril/public/normtag_json/OfflineNormtagV1.json -i "+selectedFile,shell=True)
+    os.remove(selectedFile)
