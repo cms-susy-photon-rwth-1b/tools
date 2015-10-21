@@ -32,6 +32,8 @@ def main():
     parser.add_argument("--userInputPath", default="kiesel/13TeV/nTuples")
     parser.add_argument("--outputPath", default="/user/kiesel/nTuples")
     parser.add_argument("--srmPrefix", default="srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=")
+    parser.add_argument('--joFormat',dest="joFormat", action='store_const',const=True,default=False,
+                        help="Johannes' output format")
     args = parser.parse_args()
 
     dirs = getDirs( args, 4 )
@@ -42,7 +44,10 @@ def main():
         dataset, publishedName = match.groups()
         inFolder = line.replace("512", "").strip()
         dataset = modifyDatasetName( dataset )
-        print "./mergeTier2Files.py %s/%s_%s_nTuple.root %s%s"%(args.outputPath,dataset,publishedName,args.srmPrefix,inFolder)
+        if not args.joFormat:
+            print "./mergeTier2Files.py %s/%s_%s_nTuple.root %s%s"%(args.outputPath,dataset,publishedName,args.srmPrefix,inFolder)
+        else:
+            print "./mergeTier2Files.py %s/%s.root %s%s"%("/user/lange/data/run2/dl",dataset,args.srmPrefix,inFolder)
 
 if __name__ == "__main__":
     main()
