@@ -3,6 +3,11 @@
 import argparse
 import re
 
+def myMatch( regex, string ):
+    m = re.match( regex, string )
+    return [ m ] if m else []
+
+
 def getInfoFromDir( crabDir ):
     if crabDir[-1] != "/": crabDir += "/"
     with open( crabDir+"crab.log" ) as f:
@@ -11,16 +16,14 @@ def getInfoFromDir( crabDir ):
     infos = {}
 
     for line in lines:
-        m1 = re.match("config.Data.outLFNDirBase = '(.*)'", line )
-        if m1:
-            infos["lfn"] = m1.group(1)
-        m2 = re.match( ".*Task name:.*\s([\d_]+):.*_crab_(.*)", line )
-        if m2 and "time" not in infos:
-            infos["time"] = m2.group(1)
-            infos["dset"] = m2.group(2)
-        m3 = re.match( "config.Data.publishDataName = '(.*)'", line )
-        if m3:
-            infos["publishDataName"] = m3.group(1)
+        for m in myMatch("config.Data.outLFNDirBase = '(.*)'", line ):
+            infos["lfn"] = m.group(1)
+        for m in myMatch( ".*Task name:.*\s([\d_]+):.*_crab_(.*)", line ):
+            infos["time"] = m.group(1)
+        for m in myMatch( "config.Data.publishDataName = '(.*)'", line ):
+            infos["publishDataName"] = m.group(1)
+        for m in myMatch( "config.Data.inputDataset = '/([^/]*)/.*'", line ):
+            infos["dset"] = m.group(1)
 
     return infos
 
