@@ -10,6 +10,7 @@ example usage:
 """
 import subprocess as sp
 import sys
+import argparse
 import DuplicateEventFilter.DuplicateEventFilter as dupFilter
 
 def mergeFiles(inputFiles,outputFile):
@@ -55,16 +56,8 @@ def getFilePaths(srmDirectoryPath):
     files= ["/store/"+f.partition("/cms/store/")[-1] for f in files if f.endswith(".root")]
     return files
 
-if __name__=="__main__":
-    outputFile=""
-    nextIsOutputName=False
-    # read input and output from arguments
-    if len(sys.argv) != 3:
-        print "usage:",sys.argv[0],"<outputFile>.root <srm-source-path>"
-        exit(0)
-    inputFilePath =sys.argv[2]
-    outputFilePath=sys.argv[1]
 
+def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=True ):
     # get all the subdirectories "/XXXX/" that contain the root files
     dataDirectories=getDirectoryContent(inputFilePath)
     # find all files in these subdirectories
@@ -74,5 +67,17 @@ if __name__=="__main__":
 
     # merge all of them
     mergeFiles(inputFiles,outputFilePath)
-    # check if duplicate events exist
-    dupFilter.filterFile(outputFilePath,"TreeWriter/eventTree")
+
+    if checkDuplicates:
+        # check if duplicate events exist
+        dupFilter.filterFile(outputFilePath,"TreeWriter/eventTree")
+
+if __name__=="__main__":
+
+    parser = argparse.ArgumentParser(description="Script to merge all files of a directory on Tier2.")
+    parser.add_argument("outFile")
+    parser.add_argument("srm_source_path")
+    parser.add_argument("-n", "--noDuplicateCheck", action="store_true")
+    args = parser.parse_args()
+
+    mergeTier2Files( args.outFile, args.srm_source_path, not args.noDuplicateCheck )
