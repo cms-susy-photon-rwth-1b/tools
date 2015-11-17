@@ -7,7 +7,7 @@ import re
 
 def modifyDatasetName( dataset ):
     # shorten dataset name
-    deletes = [ "_13TeV", "-madgraph", "_Tune4C", "-tauola", "_MSDecaysCKM_central", "_TuneCUETP8M1", "-amcatnloFXFX", "-madspin", "-pythia8", "MLM", "_pythia8" ]
+    deletes = [ "_13TeV", "-madgraph", "_Tune4C", "-tauola", "_MSDecaysCKM_central", "_TuneCUETP8M1", "-amcatnloFXFX", "-madspin", "-pythia8", "MLM", "_pythia8"t ]
     for d in deletes:
         dataset = dataset.replace( d, "" )
     return dataset
