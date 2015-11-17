@@ -24,3 +24,10 @@ Calculate the lumi for 25ns data for runD (and possibly later) only for a given 
 ```
 
 Calls the `brilcalc` tool, which has to be [installed](http://cms-service-lumi.web.cern.ch/cms-service-lumi/brilwsdoc.html#installation).
+
+## `showGenSUSYcontent.py` ##
+Show PDG ID histograms in the relevant range for SUSY particles:
+
+    ./showGenSUSYcontent.py file.root
+
+If MINIAODSIM or AODSIM is contained in the filename, the right Trees and Branches are used. Otherwise, the 13 TeV and 8 TeV paths are tried.
