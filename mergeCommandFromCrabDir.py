@@ -39,7 +39,7 @@ def getInfoFromDir( crabDir ):
 def getOutFileName( infos ):
     user = getpass.getuser()
     if user == "kiesel":
-        shotDset = listMergeCommands.modifyDatasetName(infos["dsetUser"])
+        shortDset = listMergeCommands.modifyDatasetName(infos["dsetUser"])
         return "/user/kiesel/nTuples/{}/{}_nTuple.root".format(infos["outputDatasetTag"],shortDset )
     if user == "jolange":
         outFileName=infos["crabDir"][:-1]
