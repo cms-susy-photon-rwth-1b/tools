@@ -11,7 +11,6 @@ example usage:
 import subprocess as sp
 import sys
 import argparse
-import DuplicateEventFilter.DuplicateEventFilter as dupFilter
 
 def mergeFiles(inputFiles,outputFile):
     """
@@ -70,6 +69,7 @@ def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=True ):
 
     if checkDuplicates:
         # check if duplicate events exist
+        import DuplicateEventFilter.DuplicateEventFilter as dupFilter
         dupFilter.filterFile(outputFilePath,"TreeWriter/eventTree")
 
 if __name__=="__main__":
