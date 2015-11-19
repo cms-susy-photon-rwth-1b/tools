@@ -35,7 +35,7 @@ def modifyDatasetName( dataset ):
 class CrabInfo:
 
     def __init__( self, infoString ):
-
+        self.user=getpass.getuser()
         if infoString.endswith("/crab.log"):
             self.initFromLog( infoString )
         elif "/pnfs/physik.rwth-aachen.de/cms/store" in infoString:
@@ -68,9 +68,8 @@ class CrabInfo:
         self.datasetName = srmPathSplitted[-4]
 
     def getOutFileName( self ):
-        user = getpass.getuser()
         modifiedDatasetName = modifyDatasetName( self.datasetName )
-        if user == "kiesel":
+        if self.user == "kiesel":
             if hasattr(self, "datasetType"):
                 if self.datasetType == "MINIAOD": # data
                     modifiedDatasetName += "_"+self.datasetMiddle
@@ -78,9 +77,9 @@ class CrabInfo:
                     for m in myMatch( '/.*/[^-]*-(.*)-[^-]*/USER', self.datasetMiddle ):
                         modifiedDatasetName += "_"+m.groups(1)
             return "/user/kiesel/nTuples/{}/{}_nTuple.root".format( self.outputDatasetTag, modifiedDatasetName )
-        elif user == "lange":
+        elif self.user == "lange":
             return "/user/lange/data/run2/dl/{}.root".format(modifiedDatasetName)
-        elif user == "rmeyer":
+        elif self.user == "rmeyer":
             return "my_output_file.root"
         return "outputFile.root"
 
@@ -122,6 +121,8 @@ class CrabInfo:
         if self.details["status"] == "COMPLETED":
             print "{}COMPLETED!{}".format(colors.GREEN,colors.NORMAL)
             doneDir = self.logFileDir.replace("/crab_","/.{}_crab_".format(self.time))
+            if self.user=="lange":
+                doneDir = self.logFileDir.replace("/crab_","/{}_{}_crab_".format(self.outputDatasetTag,self.time))
             if not auto:
                 print "Suggested:"
                 print self.getMergeCommand()
