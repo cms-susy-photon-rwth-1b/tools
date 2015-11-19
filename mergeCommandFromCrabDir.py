@@ -41,7 +41,7 @@ def getOutFileName( infos ):
     if user == "kiesel":
         shortDset = listMergeCommands.modifyDatasetName(infos["dsetUser"])
         return "/user/kiesel/nTuples/{}/{}_nTuple.root".format(infos["outputDatasetTag"],shortDset )
-    if user == "jolange":
+    if user == "lange":
         outFileName=infos["crabDir"][:-1]
         outFileName=listMergeCommands.modifyDatasetName(outFileName.replace("crab_",""))
         return "/user/lange/data/run2/dl/"+outFileName+".root"
