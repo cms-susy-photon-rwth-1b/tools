@@ -1,5 +1,6 @@
 import re
 import getpass
+import os, subprocess as sp
 from CRABClient.ClientUtilities import colors
 import mergeTier2Files
 
@@ -119,18 +120,31 @@ class CrabInfo:
     def beautifyCrabStatus( self, auto=False ):
         print self.logFileDir
         if self.details["status"] == "COMPLETED":
-            print "{}COMPLETED!{} Suggest:".format(colors.GREEN,colors.NORMAL)
-            print self.getMergeCommand()
+            print "{}COMPLETED!{}".format(colors.GREEN,colors.NORMAL)
             doneDir = self.logFileDir.replace("/crab_","/.{}_crab_".format(self.time))
-            print "mv {} {}".format( self.logFileDir, doneDir)
-            if auto:
-                print "Actually to this stuff"
-                mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
-                os.rename(self.logFileDir, doneDir)
+            if not auto:
+                print "Suggested:"
+                print self.getMergeCommand()
+                print "mv {} {}".format( self.logFileDir, doneDir)
+            else:
+                print "Downloading to",self.getOutFileName()
+                print "Moving crab directory to",doneDir
+                # change library path to cmssw default
+                cmssw=os.environ['CMSSW_BASE']+"/src"
+                cmsenv="eval `scramv1 runtime -sh`"
+                crabLibPath=os.environ['LD_LIBRARY_PATH']
+                cmsswLibPath=sp.check_output("cd "+cmssw+";"+cmsenv+"; echo $LD_LIBRARY_PATH",shell=True)
 
+                os.environ['LD_LIBRARY_PATH']=cmsswLibPath
+                mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
+                print doneDir
+                os.rename(self.logFileDir, doneDir)
+                # restore crabs library path
+                os.environ['LD_LIBRARY_PATH']=crabLibPath
         else:
             print self.details["status"]
             self.jobSummary()
+        print
 
 
 
