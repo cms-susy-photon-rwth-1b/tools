@@ -3,7 +3,7 @@
 import argparse
 import re
 import getpass
-import listMergeCommands
+import crabInfo
 
 def myMatch( regex, string ):
     m = re.match( regex, string )
@@ -39,11 +39,11 @@ def getInfoFromDir( crabDir ):
 def getOutFileName( infos ):
     user = getpass.getuser()
     if user == "kiesel":
-        shortDset = listMergeCommands.modifyDatasetName(infos["dsetUser"])
+        shortDset = crabInfo.modifyDatasetName(infos["dsetUser"])
         return "/user/kiesel/nTuples/{}/{}_nTuple.root".format(infos["outputDatasetTag"],shortDset )
     if user == "lange":
         outFileName=infos["crabDir"][:-1]
-        outFileName=listMergeCommands.modifyDatasetName(outFileName.replace("crab_",""))
+        outFileName=crabInfo.modifyDatasetName(outFileName.replace("crab_",""))
         return "/user/lange/data/run2/dl/"+outFileName+".root"
     return "test.root"
 
