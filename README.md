@@ -31,3 +31,8 @@ Show PDG ID histograms in the relevant range for SUSY particles:
     ./showGenSUSYcontent.py file.root
 
 If MINIAODSIM or AODSIM is contained in the filename, the right Trees and Branches are used. Otherwise, the 13 TeV and 8 TeV paths are tried.
+## `addBinoDecay.py` ##
+adds a Decay block (chi01->~G X) to a GGM SLHA file (neutralino1 is stable there, Pythia8 can no longer calculate the decay on its own)
+for bino-like NLSP
+
+    ./addBinoDecay.py M2_640_M1_630.slha
