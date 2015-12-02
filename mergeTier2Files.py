@@ -56,7 +56,7 @@ def getFilePaths(srmDirectoryPath):
     return files
 
 
-def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=True ):
+def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False ):
     # get all the subdirectories "/XXXX/" that contain the root files
     dataDirectories=getDirectoryContent(inputFilePath)
     # find all files in these subdirectories

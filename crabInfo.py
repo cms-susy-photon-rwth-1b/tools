@@ -1,5 +1,6 @@
 import re
 import getpass
+import os, subprocess as sp
 from CRABClient.ClientUtilities import colors
 import mergeTier2Files
 
@@ -34,7 +35,7 @@ def modifyDatasetName( dataset ):
 class CrabInfo:
 
     def __init__( self, infoString ):
-
+        self.user=getpass.getuser()
         if infoString.endswith("/crab.log"):
             self.initFromLog( infoString )
         elif "/pnfs/physik.rwth-aachen.de/cms/store" in infoString:
@@ -67,9 +68,8 @@ class CrabInfo:
         self.datasetName = srmPathSplitted[-4]
 
     def getOutFileName( self ):
-        user = getpass.getuser()
         modifiedDatasetName = modifyDatasetName( self.datasetName )
-        if user == "kiesel":
+        if self.user == "kiesel":
             if hasattr(self, "datasetType"):
                 if self.datasetType == "MINIAOD": # data
                     modifiedDatasetName += "_"+self.datasetMiddle
@@ -77,9 +77,9 @@ class CrabInfo:
                     for m in myMatch( '/.*/[^-]*-(.*)-[^-]*/USER', self.datasetMiddle ):
                         modifiedDatasetName += "_"+m.groups(1)
             return "/user/kiesel/nTuples/{}/{}_nTuple.root".format( self.outputDatasetTag, modifiedDatasetName )
-        elif user == "lange":
+        elif self.user == "lange":
             return "/user/lange/data/run2/dl/{}.root".format(modifiedDatasetName)
-        elif user == "rmeyer":
+        elif self.user == "rmeyer":
             return "my_output_file.root"
         return "outputFile.root"
 
@@ -119,18 +119,33 @@ class CrabInfo:
     def beautifyCrabStatus( self, auto=False ):
         print self.logFileDir
         if self.details["status"] == "COMPLETED":
-            print "{}COMPLETED!{} Suggest:".format(colors.GREEN,colors.NORMAL)
-            print self.getMergeCommand()
+            print "{}COMPLETED!{}".format(colors.GREEN,colors.NORMAL)
             doneDir = self.logFileDir.replace("/crab_","/.{}_crab_".format(self.time))
-            print "mv {} {}".format( self.logFileDir, doneDir)
-            if auto:
-                print "Actually to this stuff"
-                mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
-                os.rename(self.logFileDir, doneDir)
+            if self.user=="lange":
+                doneDir = self.logFileDir.replace("/crab_","/{}_{}_crab_".format(self.outputDatasetTag,self.time))
+            if not auto:
+                print "Suggested:"
+                print self.getMergeCommand()
+                print "mv {} {}".format( self.logFileDir, doneDir)
+            else:
+                print "Downloading to",self.getOutFileName()
+                print "Moving crab directory to",doneDir
+                # change library path to cmssw default
+                cmssw=os.environ['CMSSW_BASE']+"/src"
+                cmsenv="eval `scramv1 runtime -sh`"
+                crabLibPath=os.environ['LD_LIBRARY_PATH']
+                cmsswLibPath=sp.check_output("cd "+cmssw+";"+cmsenv+"; echo $LD_LIBRARY_PATH",shell=True)
 
+                os.environ['LD_LIBRARY_PATH']=cmsswLibPath
+                mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
+                print doneDir
+                os.rename(self.logFileDir, doneDir)
+                # restore crabs library path
+                os.environ['LD_LIBRARY_PATH']=crabLibPath
         else:
             print self.details["status"]
             self.jobSummary()
+        print
 
 
 

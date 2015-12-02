@@ -7,7 +7,25 @@ import glob
 import crabInfo
 
 def crabUpdate( dir ):
-    subprocess.call( "crab status {} > /dev/zero".format(dir), shell=True )
+    # fist check if proxy existent
+    out=""
+    try:
+        out=subprocess.check_output(["voms-proxy-info","--timeleft"],stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError, e:
+        print "Initialize your VOMS proxy!"
+        print e.output
+        exit(0)
+    if int(out)==0:
+        print "Your VOMS proxy expired! Please refresh."
+        exit(0)
+    # try to update
+    with open(os.devnull, "w") as FNULL:
+        out=subprocess.check_output(["crab","status",dir],stdin=FNULL,stderr=subprocess.STDOUT)
+        if "No credentials found!" in out:
+            print "No credentials found! Initialize your VOMS proxy."
+            exit(0)
+
+
 
 
 def main():
