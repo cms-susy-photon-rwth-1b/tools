@@ -17,10 +17,10 @@ def getFilesFromDataset( dataset ):
     lines = a.split("\n")[:-1]
     return lines
 
-def getOutputNameFromDataset( dataset, dir="/user/kiesel/root-files/" ):
+def getOutputNameFromDataset( dataset, dir ):
     return dir+'_'.join(dataset.split("/")[1:])+".root"
 
-def getOutputNameFromFile( filename, dir="/user/kiesel/root-files/" ):
+def getOutputNameFromFile( filename, dir ):
     s = filename.split("/")
     return dir+'_'.join([s[4],s[6],s[5]])+".root"
 
@@ -29,15 +29,21 @@ options.maxEvents = 5
 options.register ('dataset','',VarParsing.multiplicity.singleton,VarParsing.varType.string)
 options.parseArguments()
 
+user=getpass.getuser()
+dir="./"
+if user=="kiesel":
+    dir="/user/kiesel/root-files/"
+else:
+    print "Unknown user", user
 
 files = []
 outName = "test.root"
 if options.dataset:
     files = getFilesFromDataset( options.dataset )
-    outName = getOutputNameFromDataset( options.dataset )
+    outName = getOutputNameFromDataset( options.dataset, dir )
 if options.inputFiles:
     files = options.inputFiles
-    outName = getOutputNameFromFile( options.inputFiles[0] )
+    outName = getOutputNameFromFile( options.inputFiles[0], dir )
 
 
 process = cms.Process('COPY')
