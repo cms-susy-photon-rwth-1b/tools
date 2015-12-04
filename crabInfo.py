@@ -78,6 +78,14 @@ class CrabInfo:
                         modifiedDatasetName += "_"+m.groups(1)
             return "/user/kiesel/nTuples/{}/{}_nTuple.root".format( self.outputDatasetTag, modifiedDatasetName )
         elif self.user == "lange":
+            if "Run2015" in self.datasetMiddle: # distinguish different data runs/recos
+                modifiedDatasetName+="_"+self.datasetMiddle
+            elif "T5gg" in self.datasetName: # extract mass
+                m=re.search(".*_mGluino-(.*)_mNeutralino-(.*)-.*",self.datasetMiddle)
+                if m and len(m.groups())==2:
+                    modifiedDatasetName+="_g%s_n%s"%m.groups()
+                else:
+                    modifiedDatasetName="UNKOWNPATTERN"
             return "/user/lange/data/run2/dl/{}.root".format(modifiedDatasetName)
         elif self.user == "rmeyer":
             return "my_output_file.root"
