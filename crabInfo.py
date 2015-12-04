@@ -122,7 +122,9 @@ class CrabInfo:
             print "{}COMPLETED!{}".format(colors.GREEN,colors.NORMAL)
             doneDir = self.logFileDir.replace("/crab_","/.{}_crab_".format(self.time))
             if self.user=="lange":
-                doneDir = self.logFileDir.replace("/crab_","/{}_{}_crab_".format(self.outputDatasetTag,self.time))
+                doneDir = self.logFileDir.replace("/crab_","/{}_crab_".format(self.outputDatasetTag))
+                if doneDir.endswith('/'): doneDir=doneDir[:-1]
+                doneDir+="_"+self.time
             if not auto:
                 print "Suggested:"
                 print self.getMergeCommand()
