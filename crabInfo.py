@@ -107,7 +107,7 @@ class CrabInfo:
             c = colors.NORMAL
             if k == "failed": c = colors.RED
             if k == "running": c = colors.GREEN
-            if k == "transferrig": c = colors.BLUE
+            if k == "transferring": c = colors.BLUE
             print "{}\t{}{}  \t{:.1%} ({}{:3}{}/{:3})".format(c,k,colors.NORMAL,1.*v/njobs,c,v,colors.NORMAL,njobs)
 
         """# TODO: nice error output
