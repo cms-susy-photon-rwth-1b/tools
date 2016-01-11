@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 import re
 import getpass
 import os, subprocess as sp
@@ -159,4 +161,14 @@ class CrabInfo:
         print
 
 
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv)<2:
+        print "specify crab directory"
+        exit(0)
+    for dir in sys.argv[1:]:
+        info = CrabInfo( dir+"/crab.log" )
+        info.beautifyCrabStatus(False)
+        print "Tier2 output path:\n  ",info.getSrmPathFull()
+        print "Download command:\n  ",info.getMergeCommand()
 
