@@ -25,12 +25,7 @@ def getInfoFromDir( crabDir ):
             infos["outputDatasetTag"] = m.group(1)
         for m in myMatch( "config.Data.inputDataset = '(.*)'", line ):
             infos["inputDataset"] = m.group(1)
-            infos["dset"] = m.group(1).split("/")[1]
-            infos["dsetUser"] = infos["dset"]
-            for mm in myMatch( '/.*/[^-]*-(.*)-[^-]*/USER', m.group(1) ):
-                infos["dsetUser"] = mm.group(1)
-            if "Run201" in m.group(1):
-                infos["dsetUser"] = "_".join(m.group(1).split("/")[:1])
+            infos["primaryDataset"], infos["processedDataset"], infos["format"] = infos["inputDataset"].split("/")[1:]
         if "'schedd'" in line:
             infos.update(eval( line.split("\t")[-1] ))
 
@@ -39,7 +34,12 @@ def getInfoFromDir( crabDir ):
 def getOutFileName( infos ):
     user = getpass.getuser()
     if user == "kiesel":
-        shortDset = crabInfo.modifyDatasetName(infos["dsetUser"])
+        name = infos["primaryDataset"]
+        for mm in myMatch( '/.*/[^-]*-(.*)-[^-]*/USER', infos["inputDataset"] ):
+            name = mm.group(1)
+        if "Run201" in infos["processedDataset"]:
+            name = "_".join([infos["primaryDataset"],infos["processedDataset"]])
+        shortDset = crabInfo.modifyDatasetName(name)
         return "/user/kiesel/nTuples/{}/{}_nTuple.root".format(infos["outputDatasetTag"],shortDset )
     if user == "lange":
         outFileName=infos["crabDir"][:-1]
@@ -48,7 +48,7 @@ def getOutFileName( infos ):
     return "test.root"
 
 def getSrmInput( infos ):
-    return "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms{lfn}/{dset}/{outputDatasetTag}/{time}/".format( **infos )
+    return "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms{lfn}/{primaryDataset}/{outputDatasetTag}/{time}/".format( **infos )
 
 
 def getMergeCommand( crabDir ):
