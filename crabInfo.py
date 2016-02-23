@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 import re
 import getpass
 import os, subprocess as sp
@@ -21,7 +23,8 @@ def modifyDatasetName( dataset ):
         "-madspin",
         "-pythia8",
         "MLM",
-        "_pythia8"
+        "_pythia8",
+        "_Pythia8",
     ]
     if dataset.startswith("WGToLNuG_"):
         # to be able to seperate these two datasets
@@ -106,7 +109,7 @@ class CrabInfo:
             c = colors.NORMAL
             if k == "failed": c = colors.RED
             if k == "running": c = colors.GREEN
-            if k == "transferrig": c = colors.BLUE
+            if k == "transferring": c = colors.BLUE
             print "{}\t{}{}  \t{:.1%} ({}{:3}{}/{:3})".format(c,k,colors.NORMAL,1.*v/njobs,c,v,colors.NORMAL,njobs)
 
         """# TODO: nice error output
@@ -158,4 +161,14 @@ class CrabInfo:
         print
 
 
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv)<2:
+        print "specify crab directory"
+        exit(0)
+    for dir in sys.argv[1:]:
+        info = CrabInfo( dir+"/crab.log" )
+        info.beautifyCrabStatus(False)
+        print "Tier2 output path:\n  ",info.getSrmPathFull()
+        print "Download command:\n  ",info.getMergeCommand()
 
