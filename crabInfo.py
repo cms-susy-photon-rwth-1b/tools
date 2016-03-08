@@ -25,6 +25,7 @@ def modifyDatasetName( dataset ):
         "MLM",
         "_pythia8",
         "_Pythia8",
+        "-powheg",
     ]
     if dataset.startswith("WGToLNuG_"):
         # to be able to seperate these two datasets
