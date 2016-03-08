@@ -25,14 +25,20 @@ def crabUpdate( dir ):
             print "No credentials found! Initialize your VOMS proxy."
             exit(0)
 
-
-
+def crabResubmit(directory,silent=False):
+    with open(os.devnull, "w") as FNULL:
+        out=subprocess.check_output(["crab","resubmit",directory],stdin=FNULL,stderr=subprocess.STDOUT)
+        if "No credentials found!" in out:
+            print "No credentials found! Initialize your VOMS proxy."
+            exit(0)
+        if not silent: print out
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dirs', nargs='+', default=[] )
     parser.add_argument('--noUpdate', action='store_true' )
     parser.add_argument('--auto', action='store_true' )
+    parser.add_argument('--resubmit', action='store_true' )
     args = parser.parse_args()
 
     dirs = args.dirs or glob.glob(os.environ['CMSSW_BASE']+'/src/TreeWriter/crab/crab_*/')
@@ -40,8 +46,12 @@ def main():
     for dir in dirs:
         if not args.noUpdate: crabUpdate( dir )
         info = crabInfo.CrabInfo( dir+"/crab.log" )
-        info.beautifyCrabStatus(args.auto)
-
+        if args.resubmit and "failed" in info.details['jobsPerStatus'].keys():
+            info.beautifyCrabStatus()
+            print "Resubmitting..."
+            crabResubmit(dir)
+        else:
+            info.beautifyCrabStatus(args.auto)
 
 if __name__ == "__main__":
     main()
