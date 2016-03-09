@@ -123,44 +123,62 @@ class CrabInfo:
                     except: pass
         """
 
+    def completed(self):
+        return (self.details["status"] == "COMPLETED")
+
     def getMergeCommand( self ):
         outFile = self.getOutFileName()
         srmSrc  = self.getSrmPathFull()
-        return "./mergeTier2Files.py {} {}".format(outFile,srmSrc)
+        if self.user=="lange": return "mergeTier2Files.py {} {}".format(outFile,srmSrc)
+        else: return "./mergeTier2Files.py {} {}".format(outFile,srmSrc)
 
+    def doneDir(self):
+        """ Where the directory is moved when files have been downloaded
+        """
+        doneDir=self.logFileDir.replace("/crab_","/.{}_crab_".format(self.time))
+        if self.user=="lange":
+            doneDir = self.logFileDir.replace("crab_","{}_crab_".format(self.outputDatasetTag))
+            if doneDir.endswith('/'): doneDir=doneDir[:-1]
+            doneDir+="_"+self.time
+        return doneDir
 
     def beautifyCrabStatus( self, auto=False ):
         print self.logFileDir
-        if self.details["status"] == "COMPLETED":
-            print "{}COMPLETED!{}".format(colors.GREEN,colors.NORMAL)
-            doneDir = self.logFileDir.replace("/crab_","/.{}_crab_".format(self.time))
-            if self.user=="lange":
-                doneDir = self.logFileDir.replace("/crab_","/{}_crab_".format(self.outputDatasetTag))
-                if doneDir.endswith('/'): doneDir=doneDir[:-1]
-                doneDir+="_"+self.time
+        if self.completed():
+            print "{}COMPLETED!{}".format(colors.GREEN+colors.BOLD,colors.NORMAL)
+            doneDir = self.doneDir()
             if not auto:
-                print "Suggested:"
-                print self.getMergeCommand()
-                print "mv {} {}".format( self.logFileDir, doneDir)
+                print "Suggested merge command:"
+                print "  ",self.getMergeCommand()
+                print "   mv {} {}".format( self.logFileDir, doneDir)
             else:
-                print "Downloading to",self.getOutFileName()
-                print "Moving crab directory to",doneDir
-                # change library path to cmssw default
-                cmssw=os.environ['CMSSW_BASE']+"/src"
-                cmsenv="eval `scramv1 runtime -sh`"
-                crabLibPath=os.environ['LD_LIBRARY_PATH']
-                cmsswLibPath=sp.check_output("cd "+cmssw+";"+cmsenv+"; echo $LD_LIBRARY_PATH",shell=True)
-
-                os.environ['LD_LIBRARY_PATH']=cmsswLibPath
-                mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
-                print doneDir
-                os.rename(self.logFileDir, doneDir)
-                # restore crabs library path
-                os.environ['LD_LIBRARY_PATH']=crabLibPath
+                self.download()
         else:
-            print self.details["status"]
+            if self.details["status"]=="RESUBMITFAILED": print colors.BOLD+colors.RED,
+            print self.details["status"]+colors.NORMAL
             self.jobSummary()
         print
+
+    def download(self):
+        """
+        automatically download files belonging to the crab directory
+        and rename the crab directory
+        """
+        doneDir=self.doneDir()
+        print "Downloading to",self.getOutFileName()
+        print "Moving crab directory to",doneDir
+        # change library path to cmssw default
+        cmssw=os.environ['CMSSW_BASE']+"/src"
+        cmsenv="eval `scramv1 runtime -sh`"
+        crabLibPath=os.environ['LD_LIBRARY_PATH']
+        cmsswLibPath=sp.check_output("cd "+cmssw+";"+cmsenv+"; echo $LD_LIBRARY_PATH",shell=True)
+
+        os.environ['LD_LIBRARY_PATH']=cmsswLibPath
+        mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
+        print doneDir
+        os.rename(self.logFileDir, doneDir)
+        # restore crabs library path
+        os.environ['LD_LIBRARY_PATH']=crabLibPath
 
 
 if __name__ == '__main__':
