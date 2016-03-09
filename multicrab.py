@@ -37,7 +37,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dirs', nargs='+', default=[] )
     parser.add_argument('--noUpdate', action='store_true' )
-    parser.add_argument('--auto', action='store_true' )
+    parser.add_argument('--autoDL', action='store_true' )
+    parser.add_argument('--forceDL', action='store_true' )
     parser.add_argument('--resubmit', action='store_true' )
     args = parser.parse_args()
 
@@ -52,9 +53,10 @@ def main():
             crabResubmit(dir)
         else:
             info.beautifyCrabStatus()
-            if info.completed():
-                if args.auto: info.download()
-                else:         info.suggestMergeCommand()
+            if args.forceDL: info.download()
+            elif info.completed():
+                if args.autoDL: info.download()
+                else:           info.suggestMergeCommand()
 
 if __name__ == "__main__":
     main()
