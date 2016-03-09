@@ -164,8 +164,10 @@ class CrabInfo:
         and rename the crab directory
         """
         doneDir=self.doneDir()
-        print "Downloading to",self.getOutFileName()
         print "Moving crab directory to",doneDir
+        os.rename(self.logFileDir, doneDir)
+
+        print "Downloading to",self.getOutFileName()
         # change library path to cmssw default
         cmssw=os.environ['CMSSW_BASE']+"/src"
         cmsenv="eval `scramv1 runtime -sh`"
@@ -174,11 +176,8 @@ class CrabInfo:
 
         os.environ['LD_LIBRARY_PATH']=cmsswLibPath
         mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
-        print doneDir
-        os.rename(self.logFileDir, doneDir)
         # restore crabs library path
         os.environ['LD_LIBRARY_PATH']=crabLibPath
-
 
 if __name__ == '__main__':
     import sys
