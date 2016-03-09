@@ -70,6 +70,7 @@ class CrabInfo:
         self.time = srmPathSplitted[-2]
         self.outputDatasetTag = srmPathSplitted[-3]
         self.datasetName = srmPathSplitted[-4]
+        self.datasetMiddle="" # cannot easily find this, but crashes when undefined
 
     def getOutFileName( self ):
         modifiedDatasetName = modifyDatasetName( self.datasetName )
