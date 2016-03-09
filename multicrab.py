@@ -51,7 +51,10 @@ def main():
             print "Resubmitting..."
             crabResubmit(dir)
         else:
-            info.beautifyCrabStatus(args.auto)
+            info.beautifyCrabStatus()
+            if info.completed():
+                if args.auto: info.download()
+                else:         info.suggestMergeCommand()
 
 if __name__ == "__main__":
     main()

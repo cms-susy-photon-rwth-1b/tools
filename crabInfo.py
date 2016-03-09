@@ -132,6 +132,12 @@ class CrabInfo:
         if self.user=="lange": return "mergeTier2Files.py {} {}".format(outFile,srmSrc)
         else: return "./mergeTier2Files.py {} {}".format(outFile,srmSrc)
 
+    def suggestMergeCommand(self):
+        doneDir = self.doneDir()
+        print "Suggested merge command:"
+        print "  ",self.getMergeCommand()
+        print "   mv {} {}".format( self.logFileDir, doneDir)
+
     def doneDir(self):
         """ Where the directory is moved when files have been downloaded
         """
@@ -142,17 +148,10 @@ class CrabInfo:
             doneDir+="_"+self.time
         return doneDir
 
-    def beautifyCrabStatus( self, auto=False ):
+    def beautifyCrabStatus(self):
         print self.logFileDir
         if self.completed():
             print "{}COMPLETED!{}".format(colors.GREEN+colors.BOLD,colors.NORMAL)
-            doneDir = self.doneDir()
-            if not auto:
-                print "Suggested merge command:"
-                print "  ",self.getMergeCommand()
-                print "   mv {} {}".format( self.logFileDir, doneDir)
-            else:
-                self.download()
         else:
             if self.details["status"]=="RESUBMITFAILED": print colors.BOLD+colors.RED,
             print self.details["status"]+colors.NORMAL
