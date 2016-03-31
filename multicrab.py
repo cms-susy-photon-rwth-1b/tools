@@ -44,7 +44,10 @@ def main():
 
     dirs = args.dirs or glob.glob(os.environ['CMSSW_BASE']+'/src/TreeWriter/crab/crab_*/')
 
+    iTotal=0
+    iComplete=0
     for dir in dirs:
+        iTotal+=1;
         if not args.noUpdate: crabUpdate( dir )
         info = crabInfo.CrabInfo( dir+"/crab.log" )
         if args.resubmit and "failed" in info.details['jobsPerStatus'].keys():
@@ -55,9 +58,13 @@ def main():
             info.beautifyCrabStatus()
             if args.forceDL: info.download()
             elif info.completed():
+                iComplete+=1
                 if args.autoDL: info.download()
                 else:           info.suggestMergeCommand()
         print
 
+    print
+    print "==============================="
+    print "Summary: %d/%d tasks completed"%(iComplete,iTotal)
 if __name__ == "__main__":
     main()
