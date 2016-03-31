@@ -57,6 +57,7 @@ def main():
             elif info.completed():
                 if args.autoDL: info.download()
                 else:           info.suggestMergeCommand()
+        print
 
 if __name__ == "__main__":
     main()

@@ -156,7 +156,6 @@ class CrabInfo:
             if self.details["status"]=="RESUBMITFAILED": print colors.BOLD+colors.RED,
             print self.details["status"]+colors.NORMAL
             self.jobSummary()
-        print
 
     def download(self):
         """
