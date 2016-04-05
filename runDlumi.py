@@ -41,5 +41,6 @@ def createRunDjson(originalFileName):
 if __name__ == '__main__':
     originalFileName=sys.argv[1]
     selectedFile=createRunDjson(originalFileName)
-    sp.call("brilcalc lumi -u /pb --normtag ~lumipro/public/normtag_file/OfflineNormtagV2.json -i "+selectedFile,shell=True)
+    normtagFile="/afs/cern.ch/user/l/lumipro/public/normtag_file/moriond16_normtag.json"
+    sp.call("brilcalc lumi -u /pb --normtag %s -i %s"%(normtagFile,selectedFile),shell=True)
     os.remove(selectedFile)

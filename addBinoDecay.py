@@ -15,8 +15,10 @@ def outputformat(number):
     return ("%.8e"%number).upper()
 
 def BRg(m):
+    if (m<mZ) return 1
     return cw2/(cw2+sw2*(1.-mZ**2/m**2)**4)
 def BRZ(m):
+    if (m<mZ) return 0
     return sw2*(1.-mZ**2/m**2)**4/(cw2+sw2*(1.-mZ**2/m**2)**4)
 
 if __name__ == '__main__':
