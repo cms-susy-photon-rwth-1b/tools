@@ -37,7 +37,7 @@ def attachHistograms(inputFiles,outFiles):
         signalPoint=os.path.basename(fname)[:-5] # remove .root
         for name, h in hists.iteritems():
             # search for all histograms containing the model name
-            if signalPoint in name:
+            if name.endswith(signalPoint):
                 f=ROOT.TFile(fname,"update")
                 f.cd("TreeWriter")
                 h.Write(name.replace(signalPoint,""))
