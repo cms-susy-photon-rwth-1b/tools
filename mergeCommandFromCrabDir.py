@@ -4,11 +4,7 @@ import argparse
 import re
 import getpass
 import crabInfo
-
-def myMatch( regex, string ):
-    m = re.match( regex, string )
-    return [ m ] if m else []
-
+from crabInfo import myMatch
 
 def getInfoFromDir( crabDir ):
     if crabDir[-1] != "/": crabDir += "/"
