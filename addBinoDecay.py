@@ -15,10 +15,10 @@ def outputformat(number):
     return ("%.8e"%number).upper()
 
 def BRg(m):
-    if (m<mZ) return 1
+    if (m<mZ): return 1
     return cw2/(cw2+sw2*(1.-mZ**2/m**2)**4)
 def BRZ(m):
-    if (m<mZ) return 0
+    if (m<mZ): return 0
     return sw2*(1.-mZ**2/m**2)**4/(cw2+sw2*(1.-mZ**2/m**2)**4)
 
 if __name__ == '__main__':
@@ -45,8 +45,8 @@ if __name__ == '__main__':
                     print "found chi01 mass:",chi01Mass
                 if mass[0]=='#' and len(mass)==1: # end of mass block (depends on the comment line!!)
                     write="   1000039     %s   # ~G\n"%outputformat(gravitinoMass)
+                    print "writing",write
                     fout.write(write)
-                    print "written",write
 
             fout.write(line)
         print "writing chi01 decay block"
