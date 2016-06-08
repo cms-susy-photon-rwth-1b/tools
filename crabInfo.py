@@ -110,8 +110,9 @@ class CrabInfo:
         for k,v in self.details['jobsPerStatus'].iteritems():
             c = colors.NORMAL
             if k == "failed": c = colors.RED
-            if k == "running": c = colors.GREEN
+            # if k == "running": c = colors.GREEN
             if k == "transferring": c = colors.BLUE
+            if k == "finished": c = colors.GREEN
             print "{}\t{}{}  \t{:.1%} ({}{:3}{}/{:3})".format(c,k,colors.NORMAL,1.*v/njobs,c,v,colors.NORMAL,njobs)
 
         """# TODO: nice error output
