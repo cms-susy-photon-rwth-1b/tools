@@ -24,7 +24,9 @@ def trigger_eff(filename, treename):
     # eff=rt.TEfficiency("",";pt;eff",100,0,800)
     bins=range(0,160,20)
     bins+=range(160,200,10)
-    bins+=range(200,900,50)
+    bins+=range(200,1000,50)
+    bins+=range(1000,2000,100)
+    bins+=range(2000,4000,250)
     print bins
 
     runRange=(273100,273800)
