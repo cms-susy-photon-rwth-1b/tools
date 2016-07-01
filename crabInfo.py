@@ -163,10 +163,6 @@ class CrabInfo:
         automatically download files belonging to the crab directory
         and rename the crab directory
         """
-        doneDir=self.doneDir()
-        print "Moving crab directory to",doneDir
-        os.rename(self.logFileDir, doneDir)
-
         print "Downloading to",self.getOutFileName()
         # change library path to cmssw default
         cmssw=os.environ['CMSSW_BASE']+"/src"
@@ -178,6 +174,10 @@ class CrabInfo:
         mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
         # restore crabs library path
         os.environ['LD_LIBRARY_PATH']=crabLibPath
+
+        doneDir=self.doneDir()
+        print "Moving crab directory to",doneDir
+        os.rename(self.logFileDir, doneDir)
 
 if __name__ == '__main__':
     import sys
