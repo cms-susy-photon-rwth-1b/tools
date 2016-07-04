@@ -59,8 +59,13 @@ def main():
             if args.forceDL: info.download()
             elif info.completed():
                 iComplete+=1
-                if args.autoDL: info.download()
-                else:           info.suggestMergeCommand()
+                if args.autoDL:
+                    info.download()
+                else:
+                    try:
+                        info.suggestMergeCommand()
+                    except AttributeError,e:
+                        print e
         print
 
     print
