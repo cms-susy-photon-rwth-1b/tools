@@ -173,7 +173,7 @@ class CrabInfo:
         automatically download files belonging to the crab directory
         and rename the crab directory
         """
-        moveCompleted()
+        self.moveCompleted()
         print "Downloading to",self.getOutFileName()
         # change library path to cmssw default
         cmssw=os.environ['CMSSW_BASE']+"/src"
