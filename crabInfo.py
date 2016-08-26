@@ -144,9 +144,12 @@ class CrabInfo:
         """
         doneDir=self.logFileDir.replace("/crab_","/.{}_crab_".format(self.time))
         if self.user=="lange":
-            doneDir = self.logFileDir.replace("crab_","{}_crab_".format(self.outputDatasetTag))
-            if doneDir.endswith('/'): doneDir=doneDir[:-1]
+            origDir = self.logFileDir
+            if origDir.endswith('/'): origDir=origDir[:-1]
+            doneDir=origDir.split('/')[-1]
+            doneDir = doneDir.replace("crab_","{}_crab_".format(self.outputDatasetTag))
             doneDir+="_"+self.time
+            doneDir='/'.join(origDir.split('/')[:-1])+"/"+doneDir
         return doneDir
 
     def beautifyCrabStatus(self):
@@ -158,11 +161,19 @@ class CrabInfo:
             print self.details["status"]+colors.NORMAL
             self.jobSummary()
 
+    def moveCompleted(self):
+        """ move completed directory
+        """
+        doneDir=self.doneDir()
+        print "Moving crab directory to",doneDir
+        os.rename(self.logFileDir, doneDir)
+
     def download(self):
         """
         automatically download files belonging to the crab directory
         and rename the crab directory
         """
+        self.moveCompleted()
         print "Downloading to",self.getOutFileName()
         # change library path to cmssw default
         cmssw=os.environ['CMSSW_BASE']+"/src"

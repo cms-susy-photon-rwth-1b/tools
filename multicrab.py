@@ -40,6 +40,7 @@ def main():
     parser.add_argument('--autoDL', action='store_true' )
     parser.add_argument('--forceDL', action='store_true' )
     parser.add_argument('--resubmit', action='store_true' )
+    parser.add_argument('--moveCompleted', action='store_true' )
     args = parser.parse_args()
 
     dirs = args.dirs or glob.glob(os.environ['CMSSW_BASE']+'/src/TreeWriter/crab/crab_*/')
@@ -59,8 +60,14 @@ def main():
             if args.forceDL: info.download()
             elif info.completed():
                 iComplete+=1
-                if args.autoDL: info.download()
-                else:           info.suggestMergeCommand()
+                if args.autoDL:
+                    info.download()
+                else:
+                    try:
+                        info.suggestMergeCommand()
+                    except AttributeError,e:
+                        print e
+                if args.moveCompleted: info.moveCompleted()
         print
 
     print
