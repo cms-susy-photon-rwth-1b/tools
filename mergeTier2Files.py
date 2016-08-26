@@ -27,7 +27,7 @@ def mergeFiles(inputFiles,outputFile):
         ssp.separateSignalPoints(inputFiles,os.path.dirname(outputFile))
         return
     print "using hadd to merge",len(inputFiles),"files..."
-    if sp.call(["hadd","-v","0","-f",outputFile]+inputFiles):
+    if sp.call(["hadd","-f",outputFile]+inputFiles):
         sys.exit(1)
     print "written",outputFile
 
