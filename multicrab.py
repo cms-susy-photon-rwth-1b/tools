@@ -51,12 +51,11 @@ def main():
         iTotal+=1;
         if not args.noUpdate: crabUpdate( dir )
         info = crabInfo.CrabInfo( dir+"/crab.log" )
+        info.beautifyCrabStatus()
         if args.resubmit and "failed" in info.details['jobsPerStatus'].keys():
-            info.beautifyCrabStatus()
             print "Resubmitting..."
             crabResubmit(dir)
         else:
-            info.beautifyCrabStatus()
             if args.forceDL: info.download()
             elif info.completed():
                 iComplete+=1
