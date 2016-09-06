@@ -11,7 +11,6 @@ example usage:
 import subprocess as sp
 import sys
 import argparse
-import separateSignalPoints as ssp
 import os.path
 
 def mergeFiles(inputFiles,outputFile):
@@ -23,9 +22,6 @@ def mergeFiles(inputFiles,outputFile):
     # add prefix to access remotely
     gridPrefix="root://xrootd-cms.infn.it//"
     inputFiles = [gridPrefix+f for f in inputFiles]
-    if "SMS-T" in inputFiles[0]:
-        ssp.separateSignalPoints(inputFiles,os.path.dirname(outputFile))
-        return
     print "using hadd to merge",len(inputFiles),"files..."
     if sp.call(["hadd","-f",outputFile]+inputFiles):
         sys.exit(1)
