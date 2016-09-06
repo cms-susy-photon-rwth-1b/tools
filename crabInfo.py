@@ -74,6 +74,7 @@ class CrabInfo:
 
     def getOutFileName( self ):
         modifiedDatasetName = modifyDatasetName( self.datasetName )
+        if "ext" in self.datasetMiddle: modifiedDatasetName += "_ext"
         if self.user == "kiesel":
             if hasattr(self, "datasetType"):
                 if self.datasetType == "MINIAOD": # data
