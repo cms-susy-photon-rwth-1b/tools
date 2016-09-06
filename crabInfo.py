@@ -79,9 +79,6 @@ class CrabInfo:
             if hasattr(self, "datasetType"):
                 if self.datasetType == "MINIAOD": # data
                     modifiedDatasetName += "_"+self.datasetMiddle
-                if self.datasetType == "USER": # assume the signal scan
-                    for m in myMatch( '/.*/[^-]*-(.*)-[^-]*/USER', self.datasetMiddle ):
-                        modifiedDatasetName += "_"+m.groups(1)
             return "/user/kiesel/nTuples/{}/{}_nTuple.root".format( self.outputDatasetTag, modifiedDatasetName )
         elif self.user == "lange":
             if "Run2015" in self.datasetMiddle: # distinguish different data runs/recos
