@@ -48,7 +48,7 @@ def main():
     iTotal=0
     iComplete=0
     for dir in dirs:
-        iTotal+=1;
+        iTotal+=1
         if not args.noUpdate: crabUpdate( dir )
         info = crabInfo.CrabInfo( dir+"/crab.log" )
         info.beautifyCrabStatus()
