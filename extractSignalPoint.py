@@ -36,7 +36,7 @@ def getInfoFromPoint(name):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Example: ./extractSignalPoint.py ~/nTuples/SMS-T5Wg_nTuple.root -p T5Wg_1600_1500")
     parser.add_argument("inputFile")
     parser.add_argument("-p", "--point")
     args = parser.parse_args()
