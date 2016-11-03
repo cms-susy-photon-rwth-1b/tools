@@ -27,7 +27,7 @@ def modifyDatasetName( dataset ):
         "_Pythia8",
         "-powheg",
     ]
-    if dataset.startswith("WGToLNuG_"):
+    if dataset.startswith("WGToLNuG_") or dataset.startswith("TTJets_Tune"):
         # to be able to seperate these two datasets
         deletes.remove( "-amcatnloFXFX" )
         deletes.remove( "-madgraph" )
