@@ -79,7 +79,11 @@ class CrabInfo:
             if hasattr(self, "datasetType"):
                 if self.datasetType == "MINIAOD": # data
                     modifiedDatasetName += "_"+self.datasetMiddle
-            return "/user/kiesel/nTuples/{}/{}_nTuple.root".format( self.outputDatasetTag, modifiedDatasetName )
+            baseDir = "/user/kiesel/nTuples/"
+            baseDir = "/net/scratch_cms1b1/cms/user/kiesel/"
+            baseDir = os.path.join(baseDir, self.outputDatasetTag)
+            if not os.path.isdir(baseDir): os.mkdir(baseDir)
+            return os.path.join(baseDir, modifiedDatasetName+"_nTuple.root")
         elif self.user == "lange":
             if "Run2015" in self.datasetMiddle: # distinguish different data runs/recos
                 modifiedDatasetName+="_"+self.datasetMiddle
