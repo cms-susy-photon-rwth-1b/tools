@@ -8,8 +8,8 @@
 
 
 import FWCore.ParameterSet.Config as cms
-import FWCore.ParameterSet.VarParsing as VarParsing
-
+from FWCore.ParameterSet.VarParsing import VarParsing
+import getpass
 
 def getFilesFromDataset( dataset ):
     import subprocess
@@ -24,7 +24,7 @@ def getOutputNameFromFile( filename, dir ):
     s = filename.split("/")
     return dir+'_'.join([s[4],s[6],s[5]])+".root"
 
-options = VarParsing.VarParsing ('analysis')
+options = VarParsing('analysis')
 options.maxEvents = 5
 options.register ('dataset','',VarParsing.multiplicity.singleton,VarParsing.varType.string)
 options.parseArguments()
