@@ -37,10 +37,10 @@ def getOutFileName( infos ):
             name = "_".join([infos["primaryDataset"],infos["processedDataset"]])
         shortDset = crabInfo.modifyDatasetName(name)
         return "/user/kiesel/nTuples/{}/{}_nTuple.root".format(infos["outputDatasetTag"],shortDset )
-    if user == "lange":
+    if user == "jschulz":
         outFileName=infos["crabDir"][:-1]
         outFileName=crabInfo.modifyDatasetName(outFileName.replace("crab_",""))
-        return "/user/lange/data/run2/dl/"+outFileName+".root"
+        return "/user/jschulz/2016/data/run2/dl/"+outFileName+".root"     
     return "test.root"
 
 def getSrmInput( infos ):
