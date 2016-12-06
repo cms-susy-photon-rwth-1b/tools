@@ -31,7 +31,7 @@ for job in jobs:
         print name, "running"
     elif jStatus == "7":
         susTime = (time.time()-int(job["LastSuspensionTime"]))/60.
-        print name, "suspended since", susTime, "min"
+        print name, "suspended since {:.2f} min".format(susTime)
     else:
         print "job status = ", jStatus
 print getSummary()
