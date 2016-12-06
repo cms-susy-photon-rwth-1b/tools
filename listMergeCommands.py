@@ -27,7 +27,7 @@ def main():
     if not args.userInputPath:
         user = getpass.getuser()
         if user == "kiesel": args.userInputPath = "kiesel/13TeV/nTuples"
-        if user == "lange": args.userInputPath = "jolange/run2"
+        if user == "jschulz": args.userInputPath = "jschulz/run2"  
 
     dirs = getDirs( args.userInputPath, 4 )
 
