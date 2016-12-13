@@ -145,7 +145,7 @@ class CrabInfo:
         """ Where the directory is moved when files have been downloaded
         """
         doneDir=self.logFileDir.replace("/crab_","/.{}_crab_".format(self.time))
-        elif self.user=="jschulz":
+        if self.user=="jschulz":
             origDir = self.logFileDir
             if origDir.endswith('/'): origDir=origDir[:-1]
             doneDir=origDir.split('/')[-1]
