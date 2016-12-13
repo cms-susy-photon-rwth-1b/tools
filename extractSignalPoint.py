@@ -5,6 +5,7 @@ import os
 import glob
 import re
 import ROOT
+import getpass
 
 
 def getFromFile(filename, objectname):
@@ -44,7 +45,13 @@ if __name__ == "__main__":
     h = getCutFlowHistogram(args.inputFile, args.point)
     ch = ROOT.TChain("TreeWriter/eventTree")
     ch.AddFile(args.inputFile)
-    outputName = os.path.join(os.path.dirname(args.inputFile), "SMS-{}_nTuple.root".format(args.point))
+    user = getpass.getuser()
+    if user == "jschulz":
+        outputName = os.path.join(os.path.dirname(args.inputFile), "{}.root".format(args.point))
+    elif user == "kiesel":
+        outputName = os.path.join(os.path.dirname(args.inputFile), "SMS-{}_nTuple.root".format(args.point))
+    else:
+        print "ERROR: unknown user"
     fout = ROOT.TFile(outputName, "recreate")
     fout.mkdir("TreeWriter")
     fout.cd("TreeWriter")
