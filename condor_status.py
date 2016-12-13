@@ -24,10 +24,15 @@ jobs = getInfos()
 for job in jobs:
     name = getNameFromFile(job["Args"])
     name += " "*max([0,(40-len(name))])
-    if job['JobStatus'] == '2':
+    jStatus = job["JobStatus"]
+    if jStatus == "1":
+        print name, "idle"
+    elif jStatus == "2":
         print name, "running"
-    else:
+    elif jStatus == "7":
         susTime = (time.time()-int(job["LastSuspensionTime"]))/60.
-        print name, "suspended since", susTime, "min"
+        print name, "suspended since {:.2f} min".format(susTime)
+    else:
+        print "job status = ", jStatus
 print getSummary()
 

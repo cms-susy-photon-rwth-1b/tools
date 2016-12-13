@@ -40,7 +40,7 @@ def getOutFileName( infos ):
     if user == "jschulz":
         outFileName=infos["crabDir"][:-1]
         outFileName=crabInfo.modifyDatasetName(outFileName.replace("crab_",""))
-        return "/user/jschulz/2016/data/run2/dl/"+outFileName+".root"     
+        return "/user/jschulz/2016/data/run2/dl/"+outFileName+".root"
     return "test.root"
 
 def getSrmInput( infos ):

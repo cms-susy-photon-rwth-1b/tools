@@ -88,14 +88,14 @@ class CrabInfo:
             if "Run2015" in self.datasetMiddle: # distinguish different data runs/recos
                 modifiedDatasetName+="_"+self.datasetMiddle
             elif "Run2016" in self.datasetMiddle: # distinguish different data runs/recos
-                modifiedDatasetName+="_"+self.datasetMiddle                
+                modifiedDatasetName+="_"+self.datasetMiddle
             elif "T5gg" in self.datasetName: # extract mass
                 m=re.search(".*_mGluino-(.*)_mNeutralino-(.*)-.*",self.datasetMiddle)
                 if m and len(m.groups())==2:
                     modifiedDatasetName+="_g%s_n%s"%m.groups()
                 else:
                     modifiedDatasetName="UNKOWNPATTERN"
-            return "/user/jschulz/2016/data/run2/dl/{}.root".format(modifiedDatasetName)  
+            return "/user/jschulz/2016/data/run2/dl/{}.root".format(modifiedDatasetName)
         return "outputFile.root"
 
     def getSrmPath( self ):
