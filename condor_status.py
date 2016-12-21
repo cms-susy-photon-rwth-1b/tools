@@ -20,6 +20,7 @@ def getNameFromFile(fname):
     return fname.split("/")[-1].replace("_nTuple.root","").split(" ")[0]
 
 jobs = getInfos()
+jobs = sorted(jobs, key=lambda l: l["JobStatus"]+l["Args"])
 
 for job in jobs:
     name = getNameFromFile(job["Args"])
