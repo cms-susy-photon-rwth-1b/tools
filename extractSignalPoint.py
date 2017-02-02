@@ -57,7 +57,7 @@ if __name__ == "__main__":
     fout.cd("TreeWriter")
     m1, m2, nBinos = getInfoFromPoint(args.point)
     new = ch.CopyTree("signal_m1 == {} && signal_m2 == {} && signal_nBinos == {}".format(m1, m2, nBinos))
-    new.Write()
+    new.Write("", ROOT.TObject.kWriteDelete)
     if "T5" or "T6" in args.inputFile:
         # Consider different branching ratio
         if nBinos == 1:
