@@ -12,6 +12,21 @@ import subprocess as sp
 import sys
 import argparse
 import os.path
+import multiprocessing
+import ROOT
+
+def openDcacheFile(fname):
+    f = ROOT.TFile.Open("dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms"+fname)
+
+def isCorrupt(fname):
+    p = multiprocessing.Process(target=openDcacheFile, name="Foo", args=(fname,))
+    p.start()
+    p.join(2)
+    if p.is_alive():
+        p.terminate()
+        p.join()
+        return True
+    return False
 
 def mergeFiles(inputFiles,outputFile):
     """
@@ -19,6 +34,18 @@ def mergeFiles(inputFiles,outputFile):
     - prepends xrootd-prefixes for remote access
     - merge result is written to outputFile
     """
+    print "corrupt files:"
+    ROOT.gErrorIgnoreLevel = ROOT.kError
+    uncorruptFiles = []
+    for f in inputFiles:
+        if isCorrupt(f): print f
+        else: uncorruptFiles.append(f)
+    ROOT.gErrorIgnoreLevel = ROOT.kInfo
+
+    if len(uncorruptFiles) != len(inputFiles): return False
+    # warning: do use with care:
+    if True: inputFiles = uncorruptFiles
+
     # add prefix to access remotely
     gridPrefix="root://xrootd-cms.infn.it//"
     inputFiles = [gridPrefix+f for f in inputFiles]
@@ -26,6 +53,7 @@ def mergeFiles(inputFiles,outputFile):
     if sp.call(["hadd","-f",outputFile]+inputFiles):
         sys.exit(1)
     print "written",outputFile
+    return True
 
 def getDirectoryContent(srmDirectoryPath):
     """
@@ -67,12 +95,13 @@ def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False ):
         inputFiles+=getFilePaths("srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN="+d)
 
     # merge all of them
-    mergeFiles(inputFiles,outputFilePath)
+    out = mergeFiles(inputFiles,outputFilePath)
 
     if checkDuplicates:
         # check if duplicate events exist
         import DuplicateEventFilter.DuplicateEventFilter as dupFilter
         dupFilter.filterFile(outputFilePath,"TreeWriter/eventTree")
+    return out
 
 if __name__=="__main__":
 

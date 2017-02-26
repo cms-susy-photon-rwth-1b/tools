@@ -184,10 +184,11 @@ class CrabInfo:
         cmsswLibPath=sp.check_output("cd "+cmssw+";"+cmsenv+"; echo $LD_LIBRARY_PATH",shell=True)
 
         os.environ['LD_LIBRARY_PATH']=cmsswLibPath
-        mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
+        out = mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
         # restore crabs library path
         os.environ['LD_LIBRARY_PATH']=crabLibPath
-        self.moveCompleted()
+        if out: self.moveCompleted()
+        return out
 
 if __name__ == '__main__':
     import sys
