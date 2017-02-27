@@ -11,7 +11,9 @@ example usage:
 import subprocess as sp
 import sys
 import argparse
+import os
 import os.path
+import glob
 
 def mergeFiles(inputFiles,outputFile):
     """
@@ -57,6 +59,27 @@ def getFilePaths(srmDirectoryPath):
     files= ["/store/"+f.partition("/cms/store/")[-1] for f in files if f.endswith(".root")]
     return files
 
+def downloadAndMergeFiles(inputFiles, outputFile):
+    tmpDownloadDir = outputFile.replace(".root", "")
+    if not os.path.isdir(tmpDownloadDir): os.mkdir(tmpDownloadDir)
+    for f in inputFiles:
+        if not os.path.isfile(os.path.join(tmpDownloadDir, os.path.basename(f))):
+            print "Downloading", f
+            sp.call(["srmcp", "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms"+f, "file:///{}/".format(tmpDownloadDir)])
+        else:
+            print "File {} already in folder".format(f)
+    localFiles = [f for f in glob.glob("{}/*root".format(tmpDownloadDir))]
+    if len(localFiles) == len(inputFiles):
+        if sp.call(["hadd","-f",outputFile]+localFiles):
+            sys.exit(1)
+        print "Remove temporary files"
+        for f in localFiles:
+            os.remove(f)
+        os.rmdir(tmpDownloadDir)
+        return True
+    else:
+        print "Do not merge, since not all files downloaded"
+        return False
 
 def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False ):
     # get all the subdirectories "/XXXX/" that contain the root files
@@ -67,12 +90,14 @@ def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False ):
         inputFiles+=getFilePaths("srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN="+d)
 
     # merge all of them
-    mergeFiles(inputFiles,outputFilePath)
+    out = downloadAndMergeFiles(inputFiles, outputFilePath)
+    #mergeFiles(inputFiles,outputFilePath)
 
     if checkDuplicates:
         # check if duplicate events exist
         import DuplicateEventFilter.DuplicateEventFilter as dupFilter
         dupFilter.filterFile(outputFilePath,"TreeWriter/eventTree")
+    return out
 
 if __name__=="__main__":
 

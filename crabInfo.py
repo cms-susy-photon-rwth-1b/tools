@@ -133,8 +133,7 @@ class CrabInfo:
     def getMergeCommand( self ):
         outFile = self.getOutFileName()
         srmSrc  = self.getSrmPathFull()
-        if self.user=="lange": return "mergeTier2Files.py {} {}".format(outFile,srmSrc)
-        else: return "./mergeTier2Files.py {} {}".format(outFile,srmSrc)
+        return "./mergeTier2Files.py {} {}".format(outFile,srmSrc)
 
     def suggestMergeCommand(self):
         doneDir = self.doneDir()
@@ -184,10 +183,10 @@ class CrabInfo:
         cmsswLibPath=sp.check_output("cd "+cmssw+";"+cmsenv+"; echo $LD_LIBRARY_PATH",shell=True)
 
         os.environ['LD_LIBRARY_PATH']=cmsswLibPath
-        mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
+        sucess = mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
         # restore crabs library path
         os.environ['LD_LIBRARY_PATH']=crabLibPath
-        self.moveCompleted()
+        if sucess: self.moveCompleted()
 
 if __name__ == '__main__':
     import sys
