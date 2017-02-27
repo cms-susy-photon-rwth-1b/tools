@@ -62,9 +62,9 @@ def getFilePaths(srmDirectoryPath):
 def downloadAndMergeFiles(inputFiles, outputFile):
     tmpDownloadDir = outputFile.replace(".root", "")
     if not os.path.isdir(tmpDownloadDir): os.mkdir(tmpDownloadDir)
-    for f in inputFiles:
+    for ifile, f in enumerate(inputFiles):
         if not os.path.isfile(os.path.join(tmpDownloadDir, os.path.basename(f))):
-            print "Downloading", f
+            print "Downloading {}  {}/{}".format(f, ifile, len(inputFiles))
             sp.call(["srmcp", "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms"+f, "file:///{}/".format(tmpDownloadDir)])
         else:
             print "File {} already in folder".format(f)
@@ -88,6 +88,7 @@ def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False ):
     inputFiles=[]
     for d in dataDirectories:
         inputFiles+=getFilePaths("srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN="+d)
+    inputFiles.sort()
 
     # merge all of them
     out = downloadAndMergeFiles(inputFiles, outputFilePath)
