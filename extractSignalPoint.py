@@ -6,6 +6,7 @@ import glob
 import re
 import ROOT
 import getpass
+import sys
 
 
 def getFromFile(filename, objectname):
@@ -13,8 +14,9 @@ def getFromFile(filename, objectname):
     h = f.Get(objectname)
     if not h:
         print "Could not find histogram", objectname, "please consider one of the following points:"
-        for k in f.GetDirectory("TreeWriter").GetListOfKeys():
-            print k
+        names = [k.GetName() for k in f.GetDirectory("TreeWriter").GetListOfKeys()]
+        print "\n".join(sorted(names))
+        sys.exit(1)
     h = ROOT.gROOT.CloneObject(h)
     return h
 
