@@ -62,8 +62,15 @@ class CrabInfo:
             for m in myMatch( "config.Data.inputDataset = '(.*)'", line ):
                 self.inputDataset = m.group(1)
                 self.datasetName, self.datasetMiddle, self.datasetType = self.inputDataset.split("/")[1:]
-            if "'schedd'" in line:
-                self.details = eval( line.split("\t")[-1] )
+            for m in myMatch( ".*Got information from status cache file: (.*)", line ):
+                self.details = eval( m.group(1) )
+            for m in myMatch( ".*Status on the CRAB server:(.*)", line ):
+                self.statusCRAB = m.group(1).strip()
+            for m in myMatch( ".*Status on the scheduler:(.*)", line ):
+                self.statusScheduler = m.group(1).strip()
+
+        self.nJobs = len(self.details)
+        self.jobStates = [x["State"] for x in self.details.values()]
 
     def initFromSrm( self, srmPath ):
         self.srmPath = srmPath
@@ -108,15 +115,15 @@ class CrabInfo:
         return "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN="+self.getSrmPath()
 
     def jobSummary( self ):
-
-        njobs = len(self.details['jobList'])
-        for k,v in self.details['jobsPerStatus'].iteritems():
+        jobsPerStatus = dict([(x,self.jobStates.count(x)) for x in list(set(self.jobStates))])
+        for k,v in jobsPerStatus.iteritems():
+            if not v: continue
             c = colors.NORMAL
             if k == "failed": c = colors.RED
             # if k == "running": c = colors.GREEN
             if k == "transferring": c = colors.BLUE
             if k == "finished": c = colors.GREEN
-            print "{}\t{}{}  \t{:.1%} ({}{:3}{}/{:3})".format(c,k,colors.NORMAL,1.*v/njobs,c,v,colors.NORMAL,njobs)
+            print "{}\t{}{}  \t{:.1%} ({}{:3}{}/{:3})".format(c,k,colors.NORMAL,1.*v/self.nJobs,c,v,colors.NORMAL,self.nJobs)
 
         """# TODO: nice error output
         for j, d in self.details["jobs"].iteritems():
@@ -128,7 +135,7 @@ class CrabInfo:
         """
 
     def completed(self):
-        return (self.details["status"] == "COMPLETED")
+        return self.statusScheduler == "COMPLETED"
 
     def getMergeCommand( self ):
         outFile = self.getOutFileName()
@@ -159,8 +166,8 @@ class CrabInfo:
         if self.completed():
             print "{}COMPLETED!{}".format(colors.GREEN+colors.BOLD,colors.NORMAL)
         else:
-            if self.details["status"]=="RESUBMITFAILED": print colors.BOLD+colors.RED,
-            print self.details["status"]+colors.NORMAL
+            if self.statusScheduler=="RESUBMITFAILED": print colors.BOLD+colors.RED,
+            print self.statusScheduler+colors.NORMAL
             self.jobSummary()
 
     def moveCompleted(self):
