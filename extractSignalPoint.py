@@ -58,16 +58,12 @@ if __name__ == "__main__":
     fout.mkdir("TreeWriter")
     fout.cd("TreeWriter")
     m1, m2, nBinos = getInfoFromPoint(args.point)
-    new = ch.CopyTree("signal_m1 == {} && signal_m2 == {} && signal_nBinos == {}".format(m1, m2, nBinos))
+    cutString = "signal_m1 == {} && signal_m2 == {}".format(m1, m2)
+    if ("T5" in args.inputFile or "T6" in args.inputFile) and nBinos != 1:
+        cutString += " && signal_nBinos == {}".format(nBinos)
+        h.Scale(0.25)
+    new = ch.CopyTree(cutString)
     new.Write("", ROOT.TObject.kWriteDelete)
-    if "T5" in args.inputFile or "T6" in args.inputFile:
-        # Consider different branching ratio
-        if nBinos == 1:
-            h.Scale(0.5)
-        elif nBinos in [0,2]:
-            h.Scale(0.25)
-        else:
-            print "No idea how to scale cut flow histogram"
     h.Write()
     fout.Close()
 
