@@ -11,6 +11,7 @@ example usage:
 import subprocess as sp
 import sys
 import argparse
+import os
 import os.path
 import multiprocessing
 import ROOT
@@ -85,17 +86,42 @@ def getFilePaths(srmDirectoryPath):
     files= ["/store/"+f.partition("/cms/store/")[-1] for f in files if f.endswith(".root")]
     return files
 
+def downloadAndMergeFiles(inputFiles, outputFile):
+    tmpDownloadDir = outputFile.replace(".root", "")
+    if not os.path.isdir(tmpDownloadDir): os.mkdir(tmpDownloadDir)
+    for ifile, f in enumerate(inputFiles):
+        if not os.path.isfile(os.path.join(tmpDownloadDir, os.path.basename(f))):
+            print "Downloading {} {}/{}".format(f, ifile+1, len(inputFiles))
+            sp.call(["srmcp", "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms"+f, "file:///{}/".format(tmpDownloadDir)])
+        else:
+            print "File {} already in folder".format(f)
+    localFiles = [f for f in glob.glob("{}/*root".format(tmpDownloadDir))]
+    if len(localFiles) == len(inputFiles):
+        if sp.call(["hadd","-f",outputFile]+localFiles):
+            sys.exit(1)
+        print "Remove temporary files"
+        for f in localFiles:
+            os.remove(f)
+        os.rmdir(tmpDownloadDir)
+        return True
+    else:
+        print "Do not merge, since not all files downloaded"
+        return False
 
-def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False ):
+def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False, downloadFirst=False ):
     # get all the subdirectories "/XXXX/" that contain the root files
     dataDirectories=getDirectoryContent(inputFilePath)
     # find all files in these subdirectories
     inputFiles=[]
     for d in dataDirectories:
         inputFiles+=getFilePaths("srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN="+d)
+    inputFiles.sort()
 
     # merge all of them
-    out = mergeFiles(inputFiles,outputFilePath)
+    if downloadFirst:
+        out = downloadAndMergeFiles(inputFiles, outputFilePath)
+    else:
+        out = mergeFiles(inputFiles,outputFilePath)
 
     if checkDuplicates:
         # check if duplicate events exist
@@ -109,6 +135,7 @@ if __name__=="__main__":
     parser.add_argument("outFile")
     parser.add_argument("srm_source_path")
     parser.add_argument("-n", "--noDuplicateCheck", action="store_true")
+    parser.add_argument("-d", "--downloadFirst", action="store_true", help="First download all files, and then merge")
     args = parser.parse_args()
 
-    mergeTier2Files( args.outFile, args.srm_source_path, not args.noDuplicateCheck )
+    mergeTier2Files( args.outFile, args.srm_source_path, not args.noDuplicateCheck, args.downloadFirst )

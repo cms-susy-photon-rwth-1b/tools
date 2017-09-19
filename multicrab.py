@@ -52,7 +52,7 @@ def main():
         if not args.noUpdate: crabUpdate( dir )
         info = crabInfo.CrabInfo( dir+"/crab.log" )
         info.beautifyCrabStatus()
-        if args.resubmit and "failed" in info.details['jobsPerStatus'].keys():
+        if args.resubmit and "failed" in info.jobStates:
             print "Resubmitting..."
             crabResubmit(dir)
         else:
@@ -69,7 +69,6 @@ def main():
                 if args.moveCompleted: info.moveCompleted()
         print
 
-    print
     print "==============================="
     print "Summary: %d/%d tasks completed"%(iComplete,iTotal)
 if __name__ == "__main__":
