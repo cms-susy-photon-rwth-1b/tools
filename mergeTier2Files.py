@@ -28,6 +28,7 @@ def mergeFiles(inputFiles,outputFile):
     if sp.call(["hadd","-f",outputFile]+inputFiles):
         sys.exit(1)
     print "written",outputFile
+    return True
 
 def getDirectoryContent(srmDirectoryPath):
     """
@@ -64,7 +65,7 @@ def downloadAndMergeFiles(inputFiles, outputFile):
     if not os.path.isdir(tmpDownloadDir): os.mkdir(tmpDownloadDir)
     for ifile, f in enumerate(inputFiles):
         if not os.path.isfile(os.path.join(tmpDownloadDir, os.path.basename(f))):
-            print "Downloading {}  {}/{}".format(f, ifile, len(inputFiles))
+            print "Downloading {} {}/{}".format(f, ifile+1, len(inputFiles))
             sp.call(["srmcp", "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms"+f, "file:///{}/".format(tmpDownloadDir)])
         else:
             print "File {} already in folder".format(f)
@@ -81,7 +82,7 @@ def downloadAndMergeFiles(inputFiles, outputFile):
         print "Do not merge, since not all files downloaded"
         return False
 
-def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False ):
+def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False, downloadFirst=False ):
     # get all the subdirectories "/XXXX/" that contain the root files
     dataDirectories=getDirectoryContent(inputFilePath)
     # find all files in these subdirectories
@@ -91,8 +92,10 @@ def mergeTier2Files( outputFilePath, inputFilePath, checkDuplicates=False ):
     inputFiles.sort()
 
     # merge all of them
-    out = downloadAndMergeFiles(inputFiles, outputFilePath)
-    #mergeFiles(inputFiles,outputFilePath)
+    if downloadFirst:
+        out = downloadAndMergeFiles(inputFiles, outputFilePath)
+    else:
+        out = mergeFiles(inputFiles,outputFilePath)
 
     if checkDuplicates:
         # check if duplicate events exist
@@ -106,6 +109,7 @@ if __name__=="__main__":
     parser.add_argument("outFile")
     parser.add_argument("srm_source_path")
     parser.add_argument("-n", "--noDuplicateCheck", action="store_true")
+    parser.add_argument("-d", "--downloadFirst", action="store_true", help="First download all files, and then merge")
     args = parser.parse_args()
 
-    mergeTier2Files( args.outFile, args.srm_source_path, not args.noDuplicateCheck )
+    mergeTier2Files( args.outFile, args.srm_source_path, not args.noDuplicateCheck, args.downloadFirst )
