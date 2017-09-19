@@ -88,7 +88,7 @@ class CrabInfo:
                 if self.datasetType == "MINIAOD": # data
                     modifiedDatasetName += "_"+self.datasetMiddle
             baseDir = "/user/kiesel/nTuples/"
-            baseDir = "/net/scratch_cms1b1/cms/user/kiesel/"
+            baseDir = "/net/scratch_cms1b2/cms/user/kiesel/"
             baseDir = os.path.join(baseDir, self.outputDatasetTag)
             if not os.path.isdir(baseDir): os.mkdir(baseDir)
             return os.path.join(baseDir, modifiedDatasetName+"_nTuple.root")
