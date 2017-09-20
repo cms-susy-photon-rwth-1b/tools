@@ -15,6 +15,7 @@ import os
 import os.path
 import multiprocessing
 import ROOT
+import glob
 
 def openDcacheFile(fname):
     f = ROOT.TFile.Open("dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms"+fname)
