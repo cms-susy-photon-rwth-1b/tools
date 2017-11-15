@@ -3,6 +3,7 @@ import argparse
 import subprocess
 import os
 import glob
+import time
 
 import crabInfo
 
@@ -33,16 +34,7 @@ def crabResubmit(directory,silent=False):
             exit(0)
         if not silent: print out
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dirs', nargs='+', default=[] )
-    parser.add_argument('--noUpdate', action='store_true' )
-    parser.add_argument('--autoDL', action='store_true' )
-    parser.add_argument('--forceDL', action='store_true' )
-    parser.add_argument('--resubmit', action='store_true' )
-    parser.add_argument('--moveCompleted', action='store_true' )
-    args = parser.parse_args()
-
+def multicrab(args):
     dirs = args.dirs or glob.glob(os.environ['CMSSW_BASE']+'/src/TreeWriter/crab/crab_*/')
 
     iTotal=0
@@ -71,5 +63,25 @@ def main():
 
     print "==============================="
     print "Summary: %d/%d tasks completed"%(iComplete,iTotal)
+
+    if args.repeat and iComplete != iTotal:
+        print time.strftime("%H-%M-%S:"), "Sleeping for one hour."
+        time.sleep(3600)
+        multicrab(args)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dirs', nargs='+', default=[] )
+    parser.add_argument('--noUpdate', action='store_true' )
+    parser.add_argument('--autoDL', action='store_true' )
+    parser.add_argument('--forceDL', action='store_true' )
+    parser.add_argument('--resubmit', action='store_true' )
+    parser.add_argument('--moveCompleted', action='store_true' )
+    parser.add_argument('--repeat', action='store_true' )
+    args = parser.parse_args()
+
+    multicrab(args)
+
 if __name__ == "__main__":
     main()
