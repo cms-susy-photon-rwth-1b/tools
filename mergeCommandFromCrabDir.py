@@ -41,6 +41,14 @@ def getOutFileName( infos ):
         outFileName=infos["crabDir"][:-1]
         outFileName=crabInfo.modifyDatasetName(outFileName.replace("crab_",""))
         return "/user/jschulz/2016/data/run2/dl/"+outFileName+".root"
+    if user == "swuchterl":
+n       ame = infos["primaryDataset"]
+        for mm in myMatch( '/.*/[^-]*-(.*)-[^-]*/USER', infos["inputDataset"] ):
+            name = mm.group(1)
+        if "Run201" in infos["processedDataset"]:
+            name = "_".join([infos["primaryDataset"],infos["processedDataset"]])
+        shortDset = crabInfo.modifyDatasetName(name)
+        return "/user/swuchterl/nTuples/{}/{}_nTuple.root".format(infos["outputDatasetTag"],shortDset )
     return "test.root"
 
 def getSrmInput( infos ):
