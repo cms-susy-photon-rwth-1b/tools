@@ -52,6 +52,8 @@ if __name__ == "__main__":
         outputName = os.path.join(os.path.dirname(args.inputFile), "{}.root".format(args.point))
     elif user == "kiesel":
         outputName = os.path.join(os.path.dirname(args.inputFile), "SMS-{}_nTuple.root".format(args.point))
+    elif user == "swuchterl":
+        outputName = os.path.join(os.path.dirname(args.inputFile), "SMS-{}_nTuple.root".format(args.point))
     else:
         print "ERROR: unknown user"
     fout = ROOT.TFile(outputName, "recreate")
