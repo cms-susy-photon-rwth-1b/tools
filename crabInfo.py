@@ -28,7 +28,7 @@ def modifyDatasetName( dataset ):
         "-powheg",
         "_TuneCUETP8M2T4"
     ]
-    if dataset.startswith("WGToLNuG_") or dataset.startswith("TTJets_Tune"):
+    if dataset.startswith("WGToLNuG_") or dataset.startswith("TTJets_Tune") or dataset.startswith("WJetsToLNu_") or dataset.startswith("DYJetsToLL_"):
         # to be able to seperate these two datasets
         deletes.remove( "-amcatnloFXFX" )
         deletes.remove( "-madgraph" )
@@ -104,6 +104,15 @@ class CrabInfo:
                 else:
                     modifiedDatasetName="UNKOWNPATTERN"
             return "/user/jschulz/2016/data/run2/dl/{}.root".format(modifiedDatasetName)
+        elif self.user == "swuchterl":
+            if hasattr(self, "datasetType"):
+                if self.datasetType == "MINIAOD": # data
+                    modifiedDatasetName += "_"+self.datasetMiddle
+            baseDir = "/user/swuchterl/nTuples/"
+            baseDir = "/net/scratch_cms1b2/cms/user/swuchterl/"
+            baseDir = os.path.join(baseDir, self.outputDatasetTag)
+            if not os.path.isdir(baseDir): os.mkdir(baseDir)
+            return os.path.join(baseDir, modifiedDatasetName+"_nTuple.root")
         return "outputFile.root"
 
     def getSrmPath( self ):
