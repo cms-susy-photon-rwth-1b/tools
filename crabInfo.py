@@ -124,7 +124,7 @@ class CrabInfo:
                     modifiedDatasetName+="_g%s_n%s"%m.groups()
                 else:
                     modifiedDatasetName="UNKOWNPATTERN"
-            return "/user/dmeuser/master/data/{}.root".format(modifiedDatasetName)
+            return "/user/dmeuser/master/data/v02D/{}.root".format(modifiedDatasetName)
         return "outputFile.root"
 
 
@@ -175,7 +175,7 @@ class CrabInfo:
         """ Where the directory is moved when files have been downloaded
         """
         doneDir=self.logFileDir.replace("/crab_","/.{}_crab_".format(self.time))
-        if self.user=="jschulz" or self.user=="dmeuser":
+        if self.user=="jschulz":
             origDir = self.logFileDir
             if origDir.endswith('/'): origDir=origDir[:-1]
             doneDir=origDir.split('/')[-1]
