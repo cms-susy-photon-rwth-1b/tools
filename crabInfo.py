@@ -124,7 +124,7 @@ class CrabInfo:
                     modifiedDatasetName+="_g%s_n%s"%m.groups()
                 else:
                     modifiedDatasetName="UNKOWNPATTERN"
-            return "/user/dmeuser/master/data/v02D/{}.root".format(modifiedDatasetName)
+            return "/user/dmeuser/master/data/v03D/{}.root".format(modifiedDatasetName)
         return "outputFile.root"
 
 
