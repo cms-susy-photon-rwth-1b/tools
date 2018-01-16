@@ -48,11 +48,11 @@ def multicrab(args):
             print "Resubmitting..."
             crabResubmit(dir)
         else:
-            if args.forceDL: info.download()
+            if args.forceDL: info.download(args.downloadFirst)
             elif info.completed():
                 iComplete+=1
                 if args.autoDL:
-                    info.download()
+                    info.download(args.downloadFirst)
                 else:
                     try:
                         info.suggestMergeCommand()
@@ -79,6 +79,7 @@ def main():
     parser.add_argument('--resubmit', action='store_true' )
     parser.add_argument('--moveCompleted', action='store_true' )
     parser.add_argument('--repeat', action='store_true' )
+    parser.add_argument('--downloadFirst', action='store_true' )
     args = parser.parse_args()
 
     multicrab(args)
