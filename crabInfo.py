@@ -200,7 +200,7 @@ class CrabInfo:
         print "Moving crab directory to",doneDir
         os.rename(self.logFileDir, doneDir)
 
-    def download(self):
+    def download(self, downloadFirst=False):
         """
         automatically download files belonging to the crab directory
         and rename the crab directory
@@ -213,7 +213,7 @@ class CrabInfo:
         cmsswLibPath=sp.check_output("cd "+cmssw+";"+cmsenv+"; echo $LD_LIBRARY_PATH",shell=True)
 
         os.environ['LD_LIBRARY_PATH']=cmsswLibPath
-        sucess = mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull() )
+        sucess = mergeTier2Files.mergeTier2Files( self.getOutFileName(), self.getSrmPathFull(), downloadFirst=downloadFirst )
         # restore crabs library path
         os.environ['LD_LIBRARY_PATH']=crabLibPath
         if sucess: self.moveCompleted()
