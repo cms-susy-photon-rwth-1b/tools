@@ -48,9 +48,11 @@ if __name__ == "__main__":
     ch = ROOT.TChain("TreeWriter/eventTree")
     ch.AddFile(args.inputFile)
     user = getpass.getuser()
-    if user == "jschulz":
+    if user == "jschulz" or user == "dmeuser":
         outputName = os.path.join(os.path.dirname(args.inputFile), "{}.root".format(args.point))
     elif user == "kiesel":
+        outputName = os.path.join(os.path.dirname(args.inputFile), "SMS-{}_nTuple.root".format(args.point))
+    elif user == "swuchterl":
         outputName = os.path.join(os.path.dirname(args.inputFile), "SMS-{}_nTuple.root".format(args.point))
     else:
         print "ERROR: unknown user"
