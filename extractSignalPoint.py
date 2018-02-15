@@ -32,6 +32,10 @@ def getInfoFromPoint(name):
         m = re.match("TChi.*_(\d+)", name)
         if not m: print "No Idea what to do with", name
         return m.group(1), 0, 1
+    elif name.startswith("GGM_M1"):
+        m = re.match("GGM_M1(\d+)_M2(\d+)", name)
+        if not m: print "No Idea what to do with", name
+        return m.group(1), m.group(2), 1
     else:
         m = re.match("T\d(.*)_(\d+)_(\d+)", name)
         if not m: print "No Idea what to do with", name
