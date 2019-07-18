@@ -4,6 +4,7 @@ import subprocess
 import os
 import glob
 import time
+from CRABClient.ClientUtilities import colors
 
 import crabInfo
 
@@ -34,11 +35,20 @@ def crabResubmit(directory,silent=False):
             exit(0)
         if not silent: print out
 
+def crabKill(directory,silent=False):
+    with open(os.devnull, "w") as FNULL:
+        out=subprocess.check_output(["crab","kill",directory],stdin=FNULL,stderr=subprocess.STDOUT)
+        if "No credentials found!" in out:
+            print "No credentials found! Initialize your VOMS proxy."
+            exit(0)
+        if not silent: print out
+
 def multicrab(args):
     dirs = args.dirs or glob.glob(os.environ['CMSSW_BASE']+'/src/TreeWriter/crab/crab_*/')
 
     iTotal=0
     iComplete=0
+    killed=[];
     for dir in dirs:
         print dir
         iTotal+=1
@@ -48,6 +58,11 @@ def multicrab(args):
         if args.resubmit and "failed" in info.jobStates:
             print "Resubmitting..."
             crabResubmit(dir)
+        elif args.kill and info.statusCRAB=="SUBMITFAILED":
+            print "Killing..."
+            killed.append(dir.split("/")[-2])
+            # ~crabKill(dir)
+            # ~info.moveKilled()
         else:
             if args.forceDL: info.download(args.downloadFirst)
             elif info.completed():
@@ -64,10 +79,15 @@ def multicrab(args):
 
     print "==============================="
     print "Summary: %d/%d tasks completed"%(iComplete,iTotal)
+    if args.kill:
+       print colors.BOLD+colors.RED,
+       print "Killed the following samples:"+colors.NORMAL
+       for sample in killed:
+          print sample
 
     if args.repeat and iComplete != iTotal:
-        print time.strftime("%H-%M-%S:"), "Sleeping for one hour."
-        time.sleep(3600)
+        print time.strftime("%H-%M-%S:"), "Sleeping for 30 minutes."
+        time.sleep(1800)
         multicrab(args)
 
 
@@ -81,6 +101,7 @@ def main():
     parser.add_argument('--moveCompleted', action='store_true' )
     parser.add_argument('--repeat', action='store_true' )
     parser.add_argument('--downloadFirst', action='store_true' )
+    parser.add_argument('--kill', action='store_true' )
     args = parser.parse_args()
 
     multicrab(args)

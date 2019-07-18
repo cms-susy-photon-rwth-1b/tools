@@ -69,8 +69,11 @@ class CrabInfo:
             for m in myMatch( ".*Status on the scheduler:(.*)", line ):
                 self.statusScheduler = m.group(1).strip()
 
-        self.nJobs = len(self.details)
-        self.jobStates = [x["State"] for x in self.details.values()]
+        if self.statusCRAB != "SUBMITFAILED":
+           self.nJobs = len(self.details)
+           self.jobStates = [x["State"] for x in self.details.values()]
+        else:
+           self.statusScheduler="Not available since submit failed"
 
     def initFromSrm( self, srmPath ):
         self.srmPath = srmPath
@@ -81,8 +84,11 @@ class CrabInfo:
         self.datasetMiddle="" # cannot easily find this, but crashes when undefined
 
     def getOutFileName( self ):
-        modifiedDatasetName = modifyDatasetName( self.datasetName )
-        if "ext" in self.datasetMiddle: modifiedDatasetName += "_ext"
+        #~ modifiedDatasetName = modifyDatasetName( self.datasetName )
+        modifiedDatasetName = self.datasetName
+        if "ext1" in self.datasetMiddle: modifiedDatasetName += "_ext"
+        elif "ext2" in self.datasetMiddle: modifiedDatasetName += "_ext2"
+        elif "backup" in self.datasetMiddle: modifiedDatasetName += "_backup"
         if self.user == "kiesel":
             if hasattr(self, "datasetType"):
                 if self.datasetType == "MINIAOD": # data
@@ -124,7 +130,12 @@ class CrabInfo:
                     modifiedDatasetName+="_g%s_n%s"%m.groups()
                 else:
                     modifiedDatasetName="UNKOWNPATTERN"
-            return "/user/dmeuser/master/data/v03D/{}.root".format(modifiedDatasetName)
+            if "RunIISummer16" in self.datasetMiddle:
+                return "/net/data_cms1b/user/dmeuser/top_analysis/2016/v05/{}.root".format(modifiedDatasetName)
+            elif "Run2017" in self.datasetMiddle:
+                return "/net/data_cms1b/user/dmeuser/top_analysis/2017/v02/{}.root".format(modifiedDatasetName)
+            elif "Run2018" in self.datasetMiddle:
+                return "/net/data_cms1b/user/dmeuser/top_analysis/2018/v02/{}.root".format(modifiedDatasetName)
         return "outputFile.root"
 
 
@@ -183,11 +194,20 @@ class CrabInfo:
             doneDir+="_"+self.time
             doneDir='/'.join(origDir.split('/')[:-1])+"/"+doneDir
         return doneDir
+    
+    def killedDir(self):
+        """ Where the directory is moved when files have been killed
+        """
+        killedDir=self.logFileDir.replace("/crab_","/.killed/.{}_crab_".format(self.time))
+        return killedDir
 
     def beautifyCrabStatus(self):
         print self.logFileDir
         if self.completed():
             print "{}COMPLETED!{}".format(colors.GREEN+colors.BOLD,colors.NORMAL)
+        elif self.statusCRAB== "SUBMITFAILED":
+           print colors.BOLD+colors.RED,
+           print self.statusCRAB+colors.NORMAL
         else:
             if self.statusScheduler=="RESUBMITFAILED": print colors.BOLD+colors.RED,
             print self.statusScheduler+colors.NORMAL
@@ -199,6 +219,13 @@ class CrabInfo:
         doneDir=self.doneDir()
         print "Moving crab directory to",doneDir
         os.rename(self.logFileDir, doneDir)
+    
+    def moveKilled(self):
+        """ move killed directory
+        """
+        killedDir=self.killedDir()
+        print "Moving crab directory to",killedDir
+        os.rename(self.logFileDir, killedDir)
 
     def download(self, downloadFirst=False):
         """
