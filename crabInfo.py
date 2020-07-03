@@ -52,6 +52,7 @@ class CrabInfo:
         with open( logFileName ) as f:
             lines = f.readlines()
 
+        self.validStatusCache=False
         for line in lines:
             for m in myMatch("config.Data.outLFNDirBase = '(.*)'", line ):
                 self.outLFNDirBase = m.group(1)
@@ -64,16 +65,17 @@ class CrabInfo:
                 self.datasetName, self.datasetMiddle, self.datasetType = self.inputDataset.split("/")[1:]
             for m in myMatch( ".*Got information from status cache file: (.*)", line ):
                 self.details = eval( m.group(1) )
+                self.validStatusCache=True;
             for m in myMatch( ".*Status on the CRAB server:(.*)", line ):
                 self.statusCRAB = m.group(1).strip()
             for m in myMatch( ".*Status on the scheduler:(.*)", line ):
                 self.statusScheduler = m.group(1).strip()
 
-        if self.statusCRAB != "SUBMITFAILED":
+        if self.validStatusCache==True and self.statusCRAB != "SUBMITFAILED":
            self.nJobs = len(self.details)
            self.jobStates = [x["State"] for x in self.details.values()]
         else:
-           self.statusScheduler="Not available since submit failed"
+           self.statusScheduler="Not available since submit failed or not yet finished"
 
     def initFromSrm( self, srmPath ):
         self.srmPath = srmPath
@@ -88,6 +90,9 @@ class CrabInfo:
         modifiedDatasetName = self.datasetName
         if "ext1" in self.datasetMiddle: modifiedDatasetName += "_ext"
         elif "ext2" in self.datasetMiddle: modifiedDatasetName += "_ext2"
+        elif "ext3" in self.datasetMiddle: modifiedDatasetName += "_ext3"
+        elif "ext4" in self.datasetMiddle: modifiedDatasetName += "_ext4"
+        elif "ext5" in self.datasetMiddle: modifiedDatasetName += "_ext5"
         elif "backup" in self.datasetMiddle: modifiedDatasetName += "_backup"
         if self.user == "kiesel":
             if hasattr(self, "datasetType"):
@@ -131,7 +136,7 @@ class CrabInfo:
                 else:
                     modifiedDatasetName="UNKOWNPATTERN"
             if "RunIISummer16" in self.datasetMiddle:
-                return "/net/data_cms1b/user/dmeuser/top_analysis/2016/v05/{}.root".format(modifiedDatasetName)
+                return "/net/data_cms1b/user/dmeuser/top_analysis/2016/v12/{}.root".format(modifiedDatasetName)
             elif "Run2017" in self.datasetMiddle:
                 return "/net/data_cms1b/user/dmeuser/top_analysis/2017/v02/{}.root".format(modifiedDatasetName)
             elif "Run2018" in self.datasetMiddle:
@@ -154,7 +159,7 @@ class CrabInfo:
             if not v: continue
             c = colors.NORMAL
             if k == "failed": c = colors.RED
-            # if k == "running": c = colors.GREEN
+            if k == "running": c = colors.GRAY
             if k == "transferring": c = colors.BLUE
             if k == "finished": c = colors.GREEN
             print "{}\t{}{}  \t{:.1%} ({}{:3}{}/{:3})".format(c,k,colors.NORMAL,1.*v/self.nJobs,c,v,colors.NORMAL,self.nJobs)
@@ -208,6 +213,9 @@ class CrabInfo:
         elif self.statusCRAB== "SUBMITFAILED":
            print colors.BOLD+colors.RED,
            print self.statusCRAB+colors.NORMAL
+        elif self.validStatusCache==False:
+		   print colors.BOLD+colors.GREEN,
+		   print "SUBMIT NOT YET FINISHED"+colors.NORMAL
         else:
             if self.statusScheduler=="RESUBMITFAILED": print colors.BOLD+colors.RED,
             print self.statusScheduler+colors.NORMAL

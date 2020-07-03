@@ -55,14 +55,19 @@ def multicrab(args):
         if not args.noUpdate: crabUpdate( dir )
         info = crabInfo.CrabInfo( dir+"/crab.log" )
         info.beautifyCrabStatus()
-        if args.resubmit and "failed" in info.jobStates:
-            print "Resubmitting..."
-            crabResubmit(dir)
-        elif args.kill and info.statusCRAB=="SUBMITFAILED":
+        if args.resubmit and info.validStatusCache==True:
+			if "failed" in info.jobStates:
+				print "Resubmitting..."
+				crabResubmit(dir)
+        elif args.kill:
             print "Killing..."
             killed.append(dir.split("/")[-2])
-            # ~crabKill(dir)
-            # ~info.moveKilled()
+            crabKill(dir)
+            info.moveKilled()
+        elif args.killSubmitFailed and info.statusCRAB=="SUBMITFAILED":
+            print "Killing..."
+            killed.append(dir.split("/")[-2])
+            info.moveKilled()
         else:
             if args.forceDL: info.download(args.downloadFirst)
             elif info.completed():
@@ -79,7 +84,7 @@ def multicrab(args):
 
     print "==============================="
     print "Summary: %d/%d tasks completed"%(iComplete,iTotal)
-    if args.kill:
+    if args.kill or args.killSubmitFailed:
        print colors.BOLD+colors.RED,
        print "Killed the following samples:"+colors.NORMAL
        for sample in killed:
@@ -102,6 +107,7 @@ def main():
     parser.add_argument('--repeat', action='store_true' )
     parser.add_argument('--downloadFirst', action='store_true' )
     parser.add_argument('--kill', action='store_true' )
+    parser.add_argument('--killSubmitFailed', action='store_true' )
     args = parser.parse_args()
 
     multicrab(args)

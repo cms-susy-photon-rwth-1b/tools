@@ -93,7 +93,7 @@ def downloadAndMergeFiles(inputFiles, outputFile):
     for ifile, f in enumerate(inputFiles):
         if not os.path.isfile(os.path.join(tmpDownloadDir, os.path.basename(f))):
             print "Downloading {} {}/{}".format(f, ifile+1, len(inputFiles))
-            sp.call(["srmcp", "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms"+f, "file:///{}/".format(tmpDownloadDir)])
+            sp.call(["srmcp", "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms"+f, "file:///{}/{}".format(tmpDownloadDir, f.split("/")[-1])])
         else:
             print "File {} already in folder".format(f)
     localFiles = [f for f in glob.glob("{}/*root".format(tmpDownloadDir))]
